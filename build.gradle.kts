@@ -5,7 +5,7 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.5.31"
-                id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.31"
 }
 
 group = "collegeapp"
@@ -25,6 +25,9 @@ dependencies {
     implementation("io.ktor:ktor-auth:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+
+    implementation("org.litote.kmongo:kmongo-coroutine:4.3.0")
+
+    //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+//    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
 }
