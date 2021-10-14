@@ -1,5 +1,7 @@
 package com.collegeapp.routes
 
+import com.collegeapp.auth.JwtService
+import com.collegeapp.auth.JwtService.JwtData
 import com.collegeapp.models.User
 import com.collegeapp.utils.Constants.EMAIL
 import com.collegeapp.utils.Constants.IMAGE_URL
@@ -20,7 +22,7 @@ object UserRoute {
     private val database = client.getDatabase(MONGO_DB_NAME)
     private val userCollection = database.getCollection<User>()
 
-    fun Route.loginOrCreateUser() {
+    fun Route.loginOrCreateUser(jwtData: JwtData) {
         get("/$ROUTE_USER") {
             val userId = call.parameters[USER_ID]?.toLong()
             val userEmail = call.parameters[EMAIL].toString()
@@ -50,12 +52,14 @@ object UserRoute {
                         foundUser
                     )
                 } else {
+                    val accessToken = JwtService(jwtData).generateToken(id.toString(), userEmail)
 
                     val createUser = User(
                         userId = userId,
                         name = userName,
                         email = userEmail,
-                        imageUrl = userImageUrl
+                        imageUrl = userImageUrl,
+                        accessToken = accessToken
                     )
 
                     userCollection.insertOne(createUser)
