@@ -14,6 +14,8 @@ fun main() {
     }.start(wait = true)
 }
 
+fun main(args: Array<String>): Unit = EngineMain.main(args)
+
 // this is for testing
 fun Application.module() {
     CollegeApplication().apply { module() }
