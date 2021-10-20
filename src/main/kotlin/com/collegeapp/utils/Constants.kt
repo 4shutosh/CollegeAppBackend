@@ -12,7 +12,7 @@ object Constants {
     const val USER_EMAIL = "userEmail"
     const val NAME = "name"
     const val EMAIL = "email"
-    const val IMAGE_URL = "image_url"
+    const val IMAGE_URL = "imageUrl"
 
     const val ROUTE_USER = "users"
 }

@@ -1,74 +1,47 @@
 package com.collegeapp.routes
 
-import com.collegeapp.auth.JwtService
 import com.collegeapp.auth.JwtService.JwtData
-import com.collegeapp.models.User
-import com.collegeapp.utils.Constants.EMAIL
-import com.collegeapp.utils.Constants.IMAGE_URL
-import com.collegeapp.utils.Constants.MONGO_DB_NAME
-import com.collegeapp.utils.Constants.NAME
+import com.collegeapp.data.CollegeDatabase.checkForUser
+import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.ROUTE_USER
-import com.collegeapp.utils.Constants.USER_ID
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.eq
-import org.litote.kmongo.reactivestreams.KMongo
 
 object UserRoute {
-    private val client = KMongo.createClient().coroutine
-    private val database = client.getDatabase(MONGO_DB_NAME)
-    private val userCollection = database.getCollection<User>()
 
     fun Route.loginOrCreateUser(jwtData: JwtData) {
-        get("/$ROUTE_USER") {
-            val userId = call.parameters[USER_ID]?.toLong()
-            val userEmail = call.parameters[EMAIL].toString()
-            val userName = call.parameters[NAME].toString()
-            val userImageUrl = call.parameters[IMAGE_URL].toString()
+        post("/$ROUTE_USER") {
 
-            if (userId == 69L) {
-                call.respondText(
-                    status = HttpStatusCode.OK,
-                    text = "Welcome GOD $userName"
-                )
-                return@get
-            }
+//            val request = try {
+//                call.receive<LoginRequest>()
+//            } catch (e: ContentTransformationException) {
+//                call.respond(HttpStatusCode.BadRequest)
+//                return@get
+//            }
 
-            // todo check if imageUrl is necessary
-            if (userId == null || userEmail.isEmpty() || userName.isEmpty() || userImageUrl.isEmpty()) {
+            val userEmail = call.parameters[Constants.EMAIL].toString()
+            val userName = call.parameters[Constants.NAME].toString()
+            val userImageUrl = call.parameters[Constants.IMAGE_URL].toString()
+
+//            val userEmail = request.email
+//            val userName = request.name
+//            val userImageUrl = request.imageUrl
+
+            if (userEmail.isEmpty() || userName.isEmpty()) {
                 call.respond(HttpStatusCode.BadRequest)
-                return@get
+                return@post
             }
 
-            userId?.let { id ->
-                val foundUser = userCollection.findOne(User::userId eq id) // todo user constants here
+            userEmail.let { email ->
+                val loggedInUser = checkForUser(jwtData, email, userName, userImageUrl)
 
-                if (foundUser != null) {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        foundUser
-                    )
-                } else {
-                    val accessToken = JwtService(jwtData).generateToken(id.toString(), userEmail)
-
-                    val createUser = User(
-                        userId = userId,
-                        name = userName,
-                        email = userEmail,
-                        imageUrl = userImageUrl,
-                        accessToken = accessToken
-                    )
-
-                    userCollection.insertOne(createUser)
-
-                    call.respond(
-                        HttpStatusCode.OK,
-                        createUser
-                    )
-                }
+                call.respond(
+                    HttpStatusCode.OK,
+                    loggedInUser
+                )
+                return@post
             }
         }
     }
