@@ -1,7 +1,7 @@
 package com.collegeapp.data
 
 import com.collegeapp.auth.JwtService
-import com.collegeapp.models.CollegeUser
+import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.utils.CollegeLogger
 import com.collegeapp.utils.Constants.MONGO_DB_NAME
 import com.collegeapp.utils.generateUserUid
@@ -10,8 +10,9 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
-object CollegeDatabase {
+class CollegeDatabase {
 
+    // todo set env variable here
     private val client = KMongo.createClient(
         ConnectionString("mongodb://127.0.0.1:27017")
     ).coroutine

@@ -1,4 +1,4 @@
-package com.collegeapp.models
+package com.collegeapp.models.responses
 
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
@@ -7,6 +7,7 @@ import org.bson.codecs.pojo.annotations.BsonId
 
 @Serializable
 data class CollegeUser(
+    @BsonId
     val userId: String,
     val accessToken: String,
     val name: String,

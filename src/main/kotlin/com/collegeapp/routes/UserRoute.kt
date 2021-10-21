@@ -1,17 +1,21 @@
 package com.collegeapp.routes
 
 import com.collegeapp.auth.JwtService.JwtData
-import com.collegeapp.data.CollegeDatabase.checkForUser
+import com.collegeapp.data.repositories.UserRepository
 import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.ROUTE_USER
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.koin.ktor.ext.inject
 
 object UserRoute {
 
     fun Route.loginOrCreateUser(jwtData: JwtData) {
+
+        val userRepository: UserRepository by inject()
+
         post("/$ROUTE_USER") {
 
 //            val request = try {
@@ -35,7 +39,7 @@ object UserRoute {
             }
 
             userEmail.let { email ->
-                val loggedInUser = checkForUser(jwtData, email, userName, userImageUrl)
+                val loggedInUser = userRepository.login(jwtData, email, userName, userImageUrl)
 
                 call.respond(
                     HttpStatusCode.OK,
