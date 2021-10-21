@@ -29,7 +29,11 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
+    implementation("org.litote.kmongo:kmongo:4.3.0")
     implementation("org.litote.kmongo:kmongo-coroutine:4.3.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+
+    implementation("io.insert-koin:koin-ktor:3.0.1")
 
     //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 //    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")

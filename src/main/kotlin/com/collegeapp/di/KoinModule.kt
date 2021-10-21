@@ -1,15 +1,17 @@
 package com.collegeapp.di
 
-import com.mongodb.ConnectionString
+import com.collegeapp.data.CollegeDatabase
+import com.collegeapp.data.repositories.UserRepository
+import com.collegeapp.data.repositories.UserRepositoryImpl
 import org.koin.dsl.module
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 
-
-val modules = module {
-    single {
-        KMongo.createClient(
-            ConnectionString("mongodb://127.0.0.1:27017")
-        ).coroutine
-    }
+val koinModule = module {
+    single { provideCollegeDatabase() }
+    single { provideUserRepository(get() as CollegeDatabase) }
 }
+
+private fun provideCollegeDatabase(): CollegeDatabase = CollegeDatabase()
+
+private fun provideUserRepository(
+    collegeDatabase: CollegeDatabase
+): UserRepository = UserRepositoryImpl(collegeDatabase)
