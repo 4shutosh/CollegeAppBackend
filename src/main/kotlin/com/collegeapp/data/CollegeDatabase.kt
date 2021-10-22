@@ -29,12 +29,30 @@ class CollegeDatabase {
         val foundUser = collegeUserCollection.findOne(CollegeUser::email eq userEmail)
 
         if (foundUser != null) {
-            return foundUser
+            if (foundUser.imageUrl == userImageUrl ||
+                foundUser.name == userName
+            ) {
+                return foundUser
+            } else {
+                val updatedUser = CollegeUser(
+                    accessToken = foundUser.accessToken,
+                    name = userName,
+                    email = foundUser.email,
+                    imageUrl = userImageUrl,
+                    userId = foundUser.userId
+                )
+
+                collegeUserCollection.updateOne(
+                    CollegeUser::userId eq foundUser.userId,
+                    updatedUser
+                )
+
+                return updatedUser
+            }
         } else {
             val newUserId = generateUserUid()
 
             val accessToken = JwtService(jwtToken).generateToken(newUserId, userEmail)
-
 
             CollegeLogger.info("New user created with userId : $newUserId")
 
