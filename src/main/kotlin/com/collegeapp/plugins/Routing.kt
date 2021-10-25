@@ -1,7 +1,7 @@
 package com.collegeapp.plugins
 
 import com.collegeapp.auth.getJwtData
-import com.collegeapp.routes.UserRoute.loginOrCreateUser
+import com.collegeapp.routes.LoginRoute.loginOrCreateUser
 import io.ktor.application.*
 import io.ktor.http.content.*
 import io.ktor.response.*

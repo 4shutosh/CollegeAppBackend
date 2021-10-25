@@ -14,5 +14,9 @@ object Constants {
     const val EMAIL = "email"
     const val IMAGE_URL = "imageUrl"
 
-    const val ROUTE_USER = "users"
+
+    object EndPoints {
+        const val ROUTE_USER = "users"
+        const val ROUTE_LOGIN = "login"
+    }
 }

@@ -2,10 +2,11 @@ package com.collegeapp
 
 import com.collegeapp.di.koinModule
 import com.collegeapp.plugins.configureAuthentication
+import com.collegeapp.plugins.configureContentNegotiation
 import com.collegeapp.plugins.configureRouting
 import com.collegeapp.plugins.configureSecurity
-import com.collegeapp.plugins.configureSerialization
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.core.context.startKoin
@@ -31,9 +32,11 @@ class CollegeApplication {
             modules(koinModule)
         }
 
-        configureRouting()
-        configureSerialization()
+//        install(DefaultHeaders)
+        install(CallLogging)
+        configureContentNegotiation()
         configureSecurity()
         configureAuthentication()
+        configureRouting()
     }
 }
