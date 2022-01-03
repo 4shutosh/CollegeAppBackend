@@ -14,6 +14,11 @@ application {
     mainClass.set("collegeapp.ApplicationKt")
 }
 
+
+tasks.create("stage") {
+    dependsOn("installDist")
+}
+
 repositories {
     mavenCentral()
 }
