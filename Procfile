@@ -1,0 +1,1 @@
+web: build/install/collegeapp.backendktor/bin/collegeapp.backendktor
