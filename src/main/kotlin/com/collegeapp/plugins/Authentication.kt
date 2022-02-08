@@ -3,9 +3,9 @@ package com.collegeapp.plugins
 import com.collegeapp.auth.JwtService
 import com.collegeapp.auth.getJwtData
 import com.collegeapp.utils.Constants.JWT_SUBJECT
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 
 fun Application.configureAuthentication() {
 

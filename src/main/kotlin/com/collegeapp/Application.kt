@@ -5,8 +5,7 @@ import com.collegeapp.plugins.configureAuthentication
 import com.collegeapp.plugins.configureContentNegotiation
 import com.collegeapp.plugins.configureRouting
 import com.collegeapp.plugins.configureSecurity
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.core.context.startKoin
@@ -33,7 +32,7 @@ class CollegeApplication {
         }
 
 //        install(DefaultHeaders)
-        install(CallLogging)
+//        install(CallLogging)
         configureContentNegotiation()
         configureSecurity()
         configureAuthentication()

@@ -28,11 +28,10 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-host-common:$ktor_version")
-    implementation("io.ktor:ktor-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-auth:$ktor_version")
-    implementation("io.ktor:ktor-auth-jwt:$ktor_version")
-    implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
@@ -41,6 +40,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
     implementation("io.insert-koin:koin-ktor:3.1.4")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:2.0.0-beta-1")
 
     //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 //    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")

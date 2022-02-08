@@ -6,9 +6,9 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.collegeapp.utils.Constants.JWT_SUBJECT
 import com.collegeapp.utils.Constants.USER_EMAIL
 import com.collegeapp.utils.Constants.USER_ID
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import java.util.*
 
 class JwtService constructor(

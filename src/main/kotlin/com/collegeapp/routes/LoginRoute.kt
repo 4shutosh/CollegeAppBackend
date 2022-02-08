@@ -5,17 +5,18 @@ import com.collegeapp.data.repositories.UserRepository
 import com.collegeapp.models.ServerResponse
 import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_LOGIN
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import org.koin.java.KoinJavaComponent.inject
 import org.koin.ktor.ext.inject
 
 object LoginRoute {
 
     fun Route.loginOrCreateUser(jwtData: JwtData) {
 
-        val userRepository: UserRepository by inject()
+        val userRepository: UserRepository by inject(UserRepository::class.java)
 
         post("/$ROUTE_LOGIN") {
 
@@ -30,13 +31,16 @@ object LoginRoute {
 
             val loggedInUser = userRepository.login(jwtData, userEmail, userName, userImageUrl)
 
+//            call.respond(
+//                ServerResponse(
+//                    data = loggedInUser,
+//                    status = HttpStatusCode.OK.value,
+//                    message = "User Logged in"
+//                )
+//            )
             call.respond(
-                ServerResponse(
-                    data = loggedInUser,
-                    status = HttpStatusCode.OK.value,
-                    message = "User Logged in"
-                )
-            )
+                HttpStatusCode.OK,
+                loggedInUser)
             return@post
         }
     }

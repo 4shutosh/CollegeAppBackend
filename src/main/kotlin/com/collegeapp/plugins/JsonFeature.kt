@@ -1,8 +1,8 @@
 package com.collegeapp.plugins
 
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.gson.*
+import io.ktor.serialization.gson.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 
 
 fun Application.configureContentNegotiation() {
