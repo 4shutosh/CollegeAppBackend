@@ -2,6 +2,8 @@ package com.collegeapp.data
 
 import com.collegeapp.auth.JwtService
 import com.collegeapp.models.responses.CollegeUser
+import com.collegeapp.models.local.UserBookData
+import com.collegeapp.models.local.UserLibraryData
 import com.collegeapp.utils.CollegeLogger
 import com.collegeapp.utils.Constants.MONGO_DB_NAME
 import com.collegeapp.utils.generateUserUid
@@ -18,7 +20,8 @@ class CollegeDatabase {
     ).coroutine
     private val database = client.getDatabase(MONGO_DB_NAME)
 
-    private val collegeUserCollection = database.getCollection<CollegeUser>()
+    private val userCollection = database.getCollection<CollegeUser>()
+    private val userBooksCollection = database.getCollection<UserLibraryData>()
 
     suspend fun checkForUser(
         jwtToken: JwtService.JwtData,
@@ -26,7 +29,7 @@ class CollegeDatabase {
         userName: String,
         userImageUrl: String
     ): CollegeUser {
-        val foundUser = collegeUserCollection.findOne(CollegeUser::email eq userEmail)
+        val foundUser = userCollection.findOne(CollegeUser::email eq userEmail)
 
         if (foundUser != null) {
             if (foundUser.imageUrl == userImageUrl ||
@@ -42,7 +45,7 @@ class CollegeDatabase {
                     userId = foundUser.userId
                 )
 
-                collegeUserCollection.updateOne(
+                userCollection.updateOne(
                     CollegeUser::userId eq foundUser.userId,
                     updatedUser
                 )
@@ -64,11 +67,25 @@ class CollegeDatabase {
                 accessToken = accessToken
             )
 
-            collegeUserCollection.insertOne(createUser).wasAcknowledged()
+            userCollection.insertOne(createUser).wasAcknowledged()
 
             CollegeLogger.info("New user inserted into the db : $createUser")
 
             return createUser
         }
     }
+
+    suspend fun checkForBookAndIssue(){
+
+    }
+
+
+    suspend fun getAllUserBooks(userID: String) : List<UserBookData>? {
+        val userLibraryData = userBooksCollection.findOneById(
+            userID
+        )
+        return userLibraryData?.books
+    }
+
+
 }

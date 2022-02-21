@@ -18,5 +18,7 @@ object Constants {
     object EndPoints {
         const val ROUTE_USER = "users"
         const val ROUTE_LOGIN = "login"
+
+        const val ROUTE_BOOKS = "books"
     }
 }

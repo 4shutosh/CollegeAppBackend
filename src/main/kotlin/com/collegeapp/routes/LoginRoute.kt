@@ -2,7 +2,6 @@ package com.collegeapp.routes
 
 import com.collegeapp.auth.JwtService.JwtData
 import com.collegeapp.data.repositories.UserRepository
-import com.collegeapp.models.ServerResponse
 import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_LOGIN
 import io.ktor.http.*
@@ -10,7 +9,6 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.java.KoinJavaComponent.inject
-import org.koin.ktor.ext.inject
 
 object LoginRoute {
 
