@@ -2,11 +2,14 @@ package com.collegeapp.routes.books
 
 import com.collegeapp.auth.JwtService
 import com.collegeapp.data.repositories.BooksRepository
+import com.collegeapp.models.requests.InsertBookRequest
+import com.collegeapp.utils.Constants.BOOK_DAYS_ALLOWED
+import com.collegeapp.utils.Constants.BOOK_NAME
+import com.collegeapp.utils.Constants.EndPoints.INSERT_ROUTE_BOOKS
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_BOOKS
-import com.collegeapp.utils.Constants.USER_ID
-import io.ktor.http.*
+import com.collegeapp.utils.Constants.LIBRARY_NUMBER
 import io.ktor.server.application.*
-import io.ktor.server.response.*
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import org.koin.java.KoinJavaComponent.inject
 
@@ -18,29 +21,24 @@ object BooksRoute {
 
     fun Route.enableBooksRoute(jwtData: JwtService.JwtData) {
 
-        val userRepository: BooksRepository by inject(BooksRepository::class.java)
+        val booksRepository: BooksRepository by inject(BooksRepository::class.java)
 
-        post("/$ROUTE_BOOKS") {
+        post("/$INSERT_ROUTE_BOOKS") {
 
-            val userId = call.parameters[USER_ID]
+
+            val insertBookRequest = call.receive<InsertBookRequest>()
+
+            val bookName = call.parameters[BOOK_NAME]
+            val libraryBookNumber = call.parameters[LIBRARY_NUMBER]
+            val maximumDaysAllowed = call.parameters[BOOK_DAYS_ALLOWED]
 
             // assuming the userId is valid : check the authentication part of JWT
-            if (userId != null) {
-                val books = userRepository.getUserBooks(userId)
+            if (bookName != null && libraryBookNumber != null && maximumDaysAllowed != null) {
+                val bookIdString = booksRepository.insertBook(bookName, libraryBookNumber.toLong(), maximumDaysAllowed.toInt())
 
-                if (books != null) call.respond(
-                    HttpStatusCode.OK, books
-                ) else   call.respond(
-                    HttpStatusCode.OK, "No Books Found"
-                )
-                return@post
             }
-
         }
-
     }
-
-
 }
 
 

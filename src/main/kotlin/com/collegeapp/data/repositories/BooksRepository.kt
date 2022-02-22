@@ -1,28 +1,25 @@
 package com.collegeapp.data.repositories
 
 import com.collegeapp.data.CollegeDatabase
-import com.collegeapp.models.local.CollegeBook
-import com.collegeapp.models.local.UserBookData
-import com.collegeapp.models.responses.CollegeUser
 
 interface BooksRepository {
 
-    // todo return the confirmation data
-    suspend fun issueTheBookForUser(userId: String, book: CollegeBook): Boolean
-
-    suspend fun getUserBooks(userId : String) : List<UserBookData>?
+    // return book id or the complete book data
+    suspend fun insertBook(
+        bookName: String,
+        libraryBookNumber: Long,
+        maximumDaysAllowed: Int
+    ): String
 }
 
 class BooksRepositoryImpl constructor(
     private val collegeDatabase: CollegeDatabase
 ) : BooksRepository {
 
-    override suspend fun issueTheBookForUser(userId: String, book: CollegeBook): Boolean {
-        return false
+
+    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int): String {
+        return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed).toString()
     }
 
-    override suspend fun getUserBooks(userId: String): List<UserBookData>? {
-        return collegeDatabase.getAllUserBooks(userId)
-    }
 
 }

@@ -8,9 +8,10 @@ import org.bson.codecs.pojo.annotations.BsonId
 
 data class CollegeBook(
     @BsonId
-    val bookId: Long,
+    val bookId: String,
     val libraryBookNumber: Long,
     var bookName: String,
+    val maximumDaysAllowed: Int,
 )
 
 data class UserLibraryData(
