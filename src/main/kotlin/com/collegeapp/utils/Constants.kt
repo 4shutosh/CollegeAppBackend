@@ -13,6 +13,8 @@ object Constants {
     const val NAME = "name"
     const val EMAIL = "email"
     const val IMAGE_URL = "imageUrl"
+    const val INSERT = "insert"
+    const val BOOKS = "books"
 
     const val BOOK_NAME = "name"
     const val LIBRARY_NUMBER = "library_number"
@@ -24,7 +26,7 @@ object Constants {
         const val ROUTE_LOGIN = "login"
 
         const val ROUTE_BOOKS = "books"
-        const val INSERT_ROUTE_BOOKS = "books/insert"
+        const val ROUTE_INSERT_BOOKS = "books/insert"
         const val ROUTE_LIBRARY = "library"
     }
 }

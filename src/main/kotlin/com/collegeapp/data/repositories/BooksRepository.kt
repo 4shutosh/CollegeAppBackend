@@ -18,7 +18,7 @@ class BooksRepositoryImpl constructor(
 
 
     override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int): String {
-        return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed).toString()
+        return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed)
     }
 
 

@@ -9,12 +9,14 @@ import com.collegeapp.utils.CollegeLogger
 import com.collegeapp.utils.Constants.MONGO_DB_NAME
 import com.collegeapp.utils.generateUserUid
 import com.mongodb.ConnectionString
+import com.mongodb.client.result.InsertOneResult
 import org.bson.BsonValue
 import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.coroutine.insertOne
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
+import org.litote.kmongo.util.idValue
 
 class CollegeDatabase {
 
@@ -88,7 +90,8 @@ class CollegeDatabase {
 
     suspend fun insertBook(
         bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int
-    ): BsonValue? {
+    ): String {
+
         return booksCollection.insertOne(
             CollegeBook(
                 bookId = ObjectId().toString(),
@@ -96,7 +99,7 @@ class CollegeDatabase {
                 bookName = bookName,
                 maximumDaysAllowed = maximumDaysAllowed
             )
-        ).insertedId
+        ).toString()
     }
 
 }

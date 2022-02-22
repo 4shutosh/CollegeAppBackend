@@ -19,8 +19,14 @@ fun Application.configureRouting() {
         }
 
         loginOrCreateUser(jwtData)
+
+        // books
         enableBooksRoute(jwtData)
+
+        // library
         enableLibraryRoute(jwtData)
+
+
         // Static plugin. Try to access `/static/index.html`
         static("/static") {
             resources("static")
