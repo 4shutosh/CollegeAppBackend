@@ -1,22 +1,20 @@
 package com.collegeapp.data
 
 import com.collegeapp.auth.JwtService
+import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.local.CollegeBook
-import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.models.local.UserBookData
 import com.collegeapp.models.local.UserLibraryData
+import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.utils.CollegeLogger
 import com.collegeapp.utils.Constants.MONGO_DB_NAME
 import com.collegeapp.utils.generateUserUid
 import com.mongodb.ConnectionString
-import com.mongodb.client.result.InsertOneResult
-import org.bson.BsonValue
+import io.ktor.http.*
 import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.coroutine.insertOne
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
-import org.litote.kmongo.util.idValue
 
 class CollegeDatabase {
 
@@ -76,8 +74,26 @@ class CollegeDatabase {
         }
     }
 
-    suspend fun checkForBookAndIssue() {
+    suspend fun checkForBookAndIssue(libraryBookNumber: Long): ServerResponse<Any> {
+        val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        return ServerResponse(
+            data = book ?: "",
+            message = if (book != null) {
+                "Book found"
+            } else "No Book Found!",
+            status = HttpStatusCode.OK.value
+        )
+    }
 
+    suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<CollegeBook?> {
+        val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        return ServerResponse(
+            data = book,
+            message = if (book != null) {
+                "Book found"
+            } else "No Book Found!",
+            status = HttpStatusCode.OK.value
+        )
     }
 
 
@@ -92,14 +108,29 @@ class CollegeDatabase {
         bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int
     ): String {
 
-        return booksCollection.insertOne(
-            CollegeBook(
-                bookId = ObjectId().toString(),
-                libraryBookNumber = libraryBookNumber,
+        val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        if (book != null) {
+            val updatedBook = CollegeBook(
+                bookId = book.bookId,
+                libraryBookNumber,
                 bookName = bookName,
                 maximumDaysAllowed = maximumDaysAllowed
             )
-        ).toString()
+            booksCollection.updateOne(CollegeBook::libraryBookNumber eq libraryBookNumber, updatedBook)
+            return updatedBook.bookId
+        } else {
+            val newBookId = ObjectId().toString()
+
+            booksCollection.insertOne(
+                CollegeBook(
+                    bookId = newBookId,
+                    libraryBookNumber = libraryBookNumber,
+                    bookName = bookName,
+                    maximumDaysAllowed = maximumDaysAllowed
+                )
+            )
+            return newBookId
+        }
     }
 
 }

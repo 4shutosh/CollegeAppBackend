@@ -2,8 +2,11 @@ package com.collegeapp.routes.books
 
 import com.collegeapp.auth.JwtService
 import com.collegeapp.data.repositories.BooksRepository
+import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.requests.InsertBookRequest
+import com.collegeapp.utils.Constants.EndPoints.ROUTE_BOOKS
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_INSERT_BOOKS
+import com.collegeapp.utils.Constants.LIBRARY_BOOK_NUMBER
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -16,7 +19,7 @@ object BooksRoute {
 
     // assuming the user data is valid here
 
-    fun Route.enableBooksRoute(jwtData: JwtService.JwtData) {
+    fun Route.insertBooksRoute(jwtData: JwtService.JwtData) {
 
         val booksRepository: BooksRepository by inject(BooksRepository::class.java)
 
@@ -34,12 +37,37 @@ object BooksRoute {
             )
 
             call.respond(
-                HttpStatusCode.OK,
-                bookIdString
+                ServerResponse(
+                    data = bookIdString,
+                    status = HttpStatusCode.OK.value,
+                    message = "Book Insert Success"
+                )
             )
             return@post
         }
     }
+
+    fun Route.getBookByLibraryRoute(jwtData: JwtService.JwtData) {
+
+        val booksRepository: BooksRepository by inject(BooksRepository::class.java)
+
+        get("/$ROUTE_BOOKS") {
+
+            val libraryBookNumber = call.parameters[LIBRARY_BOOK_NUMBER]
+
+            println("GET Book Request found $libraryBookNumber")
+
+            // assuming the userId is valid : check the authentication part of JWT
+            if (libraryBookNumber != null) {
+                val bookIdString = booksRepository.getBookFromLibraryBookNumber(libraryBookNumber.toLong())
+                call.respond(
+                    bookIdString
+                )
+                return@get
+            }
+        }
+    }
+
 }
 
 

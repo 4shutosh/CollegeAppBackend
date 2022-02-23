@@ -17,7 +17,7 @@ object Constants {
     const val BOOKS = "books"
 
     const val BOOK_NAME = "name"
-    const val LIBRARY_NUMBER = "library_number"
+    const val LIBRARY_BOOK_NUMBER = "libraryBookNumber"
     const val BOOK_DAYS_ALLOWED = "book_days_allowed"
 
 
@@ -28,5 +28,6 @@ object Constants {
         const val ROUTE_BOOKS = "books"
         const val ROUTE_INSERT_BOOKS = "books/insert"
         const val ROUTE_LIBRARY = "library"
+        const val LIBRARY_ISSUE = "library/issue"
     }
 }
