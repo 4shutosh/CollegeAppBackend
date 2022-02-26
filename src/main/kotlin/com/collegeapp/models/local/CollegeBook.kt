@@ -15,7 +15,7 @@ data class CollegeBook(
 )
 
 data class UserLibraryData(
-    val id: Long,
+    val id: String, // this id is equal to user id
     val books: List<UserBookData>
 )
 
@@ -24,5 +24,5 @@ data class UserLibraryData(
 data class UserBookData(
     val book: CollegeBook,
     val issueTimeStamp: Long,
-    val allowedReturnTimeStamp: Long
+    val returnTimeStamp: Long
 )

@@ -15,6 +15,7 @@ import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
+import org.litote.kmongo.setValue
 
 class CollegeDatabase {
 
@@ -74,15 +75,39 @@ class CollegeDatabase {
         }
     }
 
-    suspend fun checkForBookAndIssue(libraryBookNumber: Long): ServerResponse<Any> {
-        val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
-        return ServerResponse(
-            data = book ?: "",
-            message = if (book != null) {
-                "Book found"
-            } else "No Book Found!",
-            status = HttpStatusCode.OK.value
-        )
+    suspend fun checkForBookAndIssue(userId: String, libraryBookNumber: Long): ServerResponse<Any> {
+        val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
+
+        val bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        if (bookToInsert == null)
+            return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.OK.value)
+        else {
+            val userBookDataToInsert = UserBookData(bookToInsert, 0, 0)
+
+            var responseMessage = "User Library Updated"
+
+            if (userLibrary == null) {
+                val booksListToInsert = listOf(userBookDataToInsert)
+                libraryCollection.insertOne(UserLibraryData(userId, booksListToInsert))
+
+                responseMessage = "User Library Created"
+
+            } else {
+                val userBooksMutable = userLibrary.books.toMutableList()
+                if (userBooksMutable.find { it.book.libraryBookNumber == libraryBookNumber } == null) {
+                    userBooksMutable.add(userBookDataToInsert)
+                    libraryCollection.updateOne(
+                        UserLibraryData::id eq userId,
+                        setValue(UserLibraryData::books, userBooksMutable)
+                    )
+                } else responseMessage = "Book Already In the User Library"
+            }
+            return ServerResponse(
+                libraryCollection.findOne(UserLibraryData::id eq userId),
+                responseMessage,
+                HttpStatusCode.OK.value
+            )
+        }
     }
 
     suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<CollegeBook?> {

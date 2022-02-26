@@ -17,7 +17,7 @@ class LibraryRepositoryImpl constructor(
 ) : LibraryRepository {
 
     override suspend fun issueTheBookForUser(userId: String, libraryBookNumber: Long): ServerResponse<Any> {
-        return collegeDatabase.checkForBookAndIssue(libraryBookNumber)
+        return collegeDatabase.checkForBookAndIssue(userId, libraryBookNumber)
     }
 
     override suspend fun getUserBooks(userId: String): List<UserBookData>? {
