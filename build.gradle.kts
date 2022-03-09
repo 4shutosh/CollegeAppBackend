@@ -41,6 +41,7 @@ dependencies {
 
     implementation("io.insert-koin:koin-ktor:3.1.4")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.0.0-beta-1")
+    implementation("io.ktor:ktor-server-call-logging:$ktor_version")
 
     //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 //    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
