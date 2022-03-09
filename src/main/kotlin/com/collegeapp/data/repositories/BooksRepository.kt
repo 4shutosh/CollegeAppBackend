@@ -10,7 +10,7 @@ interface BooksRepository {
     suspend fun insertBook(
         bookName: String,
         libraryBookNumber: Long,
-        maximumDaysAllowed: Int
+        maximumDaysAllowed: Long
     ): String
 
     suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long) : ServerResponse<CollegeBook?>
@@ -21,7 +21,7 @@ class BooksRepositoryImpl constructor(
 ) : BooksRepository {
 
 
-    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int): String {
+    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long): String {
         return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed)
     }
 

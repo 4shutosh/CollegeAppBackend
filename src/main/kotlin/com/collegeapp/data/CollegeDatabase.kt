@@ -16,6 +16,8 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.setValue
+import java.util.concurrent.TimeUnit
+import kotlin.time.DurationUnit
 
 class CollegeDatabase {
 
@@ -78,11 +80,44 @@ class CollegeDatabase {
     suspend fun checkForBookAndIssue(userId: String, libraryBookNumber: Long): ServerResponse<Any> {
         val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
 
-        val bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        var bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         if (bookToInsert == null)
             return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.OK.value)
         else {
-            val userBookDataToInsert = UserBookData(bookToInsert, 0, 0)
+
+            if (!bookToInsert.isAvailableToIssue) {
+                if (userId == bookToInsert.ownerUserId) {
+                    return ServerResponse(
+                        data = userLibrary,
+                        message = "You've Already Issued this Book",
+                        status = HttpStatusCode.OK.value
+                    )
+                }
+
+                val ownerUser = userCollection.findOne(CollegeUser::userId eq userId)
+                return if (ownerUser != null) {
+                    ServerResponse(
+                        data = Pair(ownerUser.email, ownerUser.name),
+                        message = "Book Unavailable to Issue",
+                        status = HttpStatusCode.OK.value
+                    )
+                } else {
+                    ServerResponse(
+                        data = null,
+                        message = "Something Wrong Happened 420",
+                        status = HttpStatusCode.OK.value
+                    )
+                }
+            }
+
+            // updating the bookToInsert in repository as not available to issue
+            bookToInsert = bookToInsert.copy(isAvailableToIssue = false, ownerUserId = userId)
+            booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
+
+            // this is GMT
+            val currentTimeStamp = System.currentTimeMillis()
+            val returnTimeStamp = currentTimeStamp + TimeUnit.DAYS.toMillis(bookToInsert.maximumDaysAllowed)
+            val userBookDataToInsert = UserBookData(bookToInsert, System.currentTimeMillis(), returnTimeStamp)
 
             var responseMessage = "User Library Updated"
 
@@ -122,22 +157,25 @@ class CollegeDatabase {
     }
 
 
-    suspend fun getAllUserBooks(userID: String): List<UserBookData>? {
+    suspend fun getAllUserBooks(userID: String): ServerResponse<List<UserBookData>> {
         val userLibraryData = libraryCollection.findOneById(
             userID
         )
-        return userLibraryData?.books
+        return ServerResponse(
+            data = userLibraryData?.books ?: emptyList(),
+            message = if (userLibraryData?.books != null) "Books Found" else "No Books Found",
+            status = HttpStatusCode.OK.value
+        )
     }
 
     suspend fun insertBook(
-        bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Int
+        bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long
     ): String {
 
         val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         if (book != null) {
-            val updatedBook = CollegeBook(
-                bookId = book.bookId,
-                libraryBookNumber,
+            val updatedBook = book.copy(
+                libraryBookNumber = libraryBookNumber,
                 bookName = bookName,
                 maximumDaysAllowed = maximumDaysAllowed
             )
@@ -151,7 +189,8 @@ class CollegeDatabase {
                     bookId = newBookId,
                     libraryBookNumber = libraryBookNumber,
                     bookName = bookName,
-                    maximumDaysAllowed = maximumDaysAllowed
+                    maximumDaysAllowed = maximumDaysAllowed,
+                    isAvailableToIssue = true
                 )
             )
             return newBookId

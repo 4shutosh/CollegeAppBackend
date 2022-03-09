@@ -5,6 +5,7 @@ import com.collegeapp.routes.LoginRoute.loginOrCreateUser
 import com.collegeapp.routes.books.BooksRoute.getBookByLibraryRoute
 import com.collegeapp.routes.books.BooksRoute.insertBooksRoute
 import com.collegeapp.routes.books.LibraryRoute.enableLibraryRoute
+import com.collegeapp.routes.books.LibraryRoute.issueABookLibrary
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
@@ -27,6 +28,7 @@ fun Application.configureRouting() {
 
         // library
         enableLibraryRoute(jwtData)
+        issueABookLibrary(jwtData)
 
 
         // Static plugin. Try to access `/static/index.html`

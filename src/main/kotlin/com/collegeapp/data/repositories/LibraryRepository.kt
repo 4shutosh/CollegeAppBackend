@@ -9,7 +9,7 @@ interface LibraryRepository {
     // todo return the confirmation data
     suspend fun issueTheBookForUser(userId: String, libraryBookNumber: Long): ServerResponse<Any>
 
-    suspend fun getUserBooks(userId: String): List<UserBookData>?
+    suspend fun getUserBooks(userId: String): ServerResponse<List<UserBookData>>
 }
 
 class LibraryRepositoryImpl constructor(
@@ -20,7 +20,7 @@ class LibraryRepositoryImpl constructor(
         return collegeDatabase.checkForBookAndIssue(userId, libraryBookNumber)
     }
 
-    override suspend fun getUserBooks(userId: String): List<UserBookData>? {
+    override suspend fun getUserBooks(userId: String): ServerResponse<List<UserBookData>> {
         return collegeDatabase.getAllUserBooks(userId)
     }
 

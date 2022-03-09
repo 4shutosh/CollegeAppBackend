@@ -8,7 +8,11 @@ import com.collegeapp.plugins.configureSecurity
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.koin.core.context.startKoin
+import io.ktor.server.plugins.*
+import io.ktor.server.request.*
+import org.koin.core.context.GlobalContext.startKoin
+import org.slf4j.event.Level
+
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
@@ -32,7 +36,10 @@ class CollegeApplication {
         }
 
 //        install(DefaultHeaders)
-//        install(CallLogging)
+        install(CallLogging) {
+            level = Level.INFO
+            filter { call -> call.request.path().startsWith("/") }
+        }
         configureContentNegotiation()
         configureSecurity()
         configureAuthentication()
