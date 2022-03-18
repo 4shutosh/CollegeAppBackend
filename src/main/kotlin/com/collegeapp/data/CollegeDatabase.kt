@@ -21,7 +21,6 @@ import kotlin.time.DurationUnit
 
 class CollegeDatabase {
 
-    // todo set env variable here
     private val client = KMongo.createClient(
         ConnectionString(System.getenv("MONGO_URL"))
     ).coroutine

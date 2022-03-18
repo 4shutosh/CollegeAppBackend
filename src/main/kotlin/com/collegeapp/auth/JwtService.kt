@@ -35,7 +35,7 @@ class JwtService constructor(
 
     fun configureKtorFeature(config: JWTAuthenticationProvider.Configuration) = with(config) {
         verifier(jwtVerifier)
-        realm = jwtData.jwtRealm
+//        realm = jwtData.jwtRealm
 
         validate {
             val userId = it.payload.getClaim(USER_ID).asInt()
