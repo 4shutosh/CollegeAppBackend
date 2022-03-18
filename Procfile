@@ -1,1 +1,1 @@
-web: build/install/collegeapp.backendktor/bin/collegeapp.backendktor
+web: build/install/com.collegeapp.backendktor/bin/com.collegeapp.backendktor
