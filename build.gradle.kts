@@ -39,7 +39,7 @@ dependencies {
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
-    implementation("io.insert-koin:koin-ktor:3.1.4")
+    implementation("io.insert-koin:koin-ktor:3.1.5")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
 
