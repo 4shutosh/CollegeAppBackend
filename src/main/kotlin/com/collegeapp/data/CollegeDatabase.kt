@@ -23,7 +23,7 @@ class CollegeDatabase {
 
     // todo set env variable here
     private val client = KMongo.createClient(
-        ConnectionString("mongodb://127.0.0.1:27017")
+        ConnectionString(System.getenv("MONGO_URL"))
     ).coroutine
     private val database = client.getDatabase(MONGO_DB_NAME)
 
