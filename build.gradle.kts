@@ -12,7 +12,7 @@ plugins {
 group = "collegeapp"
 version = "0.0.1"
 application {
-    mainClass.set("collegeapp.ApplicationKt")
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 
