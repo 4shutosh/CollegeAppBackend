@@ -16,15 +16,12 @@ import org.koin.java.KoinJavaComponent.inject
 
 object BooksRoute {
 
+    private val booksRepository: BooksRepository by inject(BooksRepository::class.java)
 
     // assuming the user data is valid here
 
     fun Route.insertBooksRoute(jwtData: JwtService.JwtData) {
-
-        val booksRepository: BooksRepository by inject(BooksRepository::class.java)
-
         post("/$ROUTE_INSERT_BOOKS") {
-
             val insertBookRequest = call.receive<InsertBookRequest>()
 
             println("Insert Book Request found $insertBookRequest")
@@ -48,9 +45,6 @@ object BooksRoute {
     }
 
     fun Route.getBookByLibraryRoute(jwtData: JwtService.JwtData) {
-
-        val booksRepository: BooksRepository by inject(BooksRepository::class.java)
-
         get("/$ROUTE_BOOKS") {
 
             val libraryBookNumber = call.parameters[LIBRARY_BOOK_NUMBER]

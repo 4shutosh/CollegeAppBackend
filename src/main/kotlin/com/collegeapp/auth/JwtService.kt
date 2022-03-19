@@ -17,16 +17,13 @@ class JwtService constructor(
 
     private val algorithm = Algorithm.HMAC256(jwtData.secret)
 
-    private
-    val jwtVerifier: JWTVerifier = JWT.require(algorithm).withIssuer(jwtData.jwtIssuer).build()
+    private val jwtVerifier: JWTVerifier = JWT.require(algorithm).withIssuer(jwtData.jwtIssuer).build()
 
     fun generateToken(userId: String, userEmail: String): String =
-        JWT.create()
-            .withSubject(JWT_SUBJECT)
+        JWT.create().withSubject(JWT_SUBJECT)
             .withIssuer(jwtData.jwtIssuer)
             .withClaim(USER_ID, userId) // can add another claim of userEmail
-            .withClaim(USER_EMAIL, userEmail)
-            .sign(algorithm)
+            .withClaim(USER_EMAIL, userEmail).sign(algorithm)
 
 
     private fun expiresAt() =
@@ -35,10 +32,10 @@ class JwtService constructor(
 
     fun configureKtorFeature(config: JWTAuthenticationProvider.Configuration) = with(config) {
         verifier(jwtVerifier)
-//        realm = jwtData.jwtRealm
+        realm = jwtData.jwtRealm
 
         validate {
-            val userId = it.payload.getClaim(USER_ID).asInt()
+            val userId = it.payload.getClaim(USER_ID).asString()
             val userEmail = it.payload.getClaim(USER_EMAIL).asString()
 
             if (userId != null && userEmail != null) {
@@ -49,22 +46,17 @@ class JwtService constructor(
         }
     }
 
-    data class JwtUser(val userId: Int, val userEmail: String) : Principal
+    data class JwtUser(val userId: String, val userEmail: String) : Principal
 
     data class JwtData(val secret: String, val jwtIssuer: String, val jwtRealm: String)
 }
 
 fun Application.getJwtData(): JwtService.JwtData {
-
-    // todo throw error if something is wrong here
-
-    val jwtConfig = environment.config.propertyOrNull("jwt.secret")?.getString() ?: "ABCDabcd"
-    val jwtIssuer = environment.config.propertyOrNull("jwt.issuer")?.getString() ?: "http://0.0.0.0:8080/"
-    val jwtRealm = environment.config.propertyOrNull("jwt.realm")?.getString() ?: "Jwt Realm"
+    val jwtSecret = System.getenv("jwt.secret")
+    val jwtIssuer = System.getenv("jwt.issuer")
+    val jwtRealm = System.getenv("jwt.realm")
 
     return JwtService.JwtData(
-        secret = jwtConfig,
-        jwtIssuer = jwtIssuer,
-        jwtRealm = jwtRealm
+        secret = jwtSecret, jwtIssuer = jwtIssuer, jwtRealm = jwtRealm
     )
 }

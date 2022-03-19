@@ -12,9 +12,9 @@ import org.koin.java.KoinJavaComponent.inject
 
 object LoginRoute {
 
-    fun Route.loginOrCreateUser(jwtData: JwtData) {
+    private val userRepository: UserRepository by inject(UserRepository::class.java)
 
-        val userRepository: UserRepository by inject(UserRepository::class.java)
+    fun Route.loginOrCreateUser(jwtData: JwtData) {
 
         post("/$ROUTE_LOGIN") {
 
@@ -38,7 +38,8 @@ object LoginRoute {
 //            )
             call.respond(
                 HttpStatusCode.OK,
-                loggedInUser)
+                loggedInUser
+            )
             return@post
         }
     }

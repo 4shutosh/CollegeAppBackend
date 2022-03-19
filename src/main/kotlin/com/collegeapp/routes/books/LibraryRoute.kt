@@ -15,8 +15,9 @@ import org.koin.java.KoinJavaComponent
 
 object LibraryRoute {
 
+    private val libraryRepository: LibraryRepository by KoinJavaComponent.inject(LibraryRepository::class.java)
+
     fun Route.issueABookLibrary(jwtData: JwtService.JwtData) {
-        val libraryRepository: LibraryRepository by KoinJavaComponent.inject(LibraryRepository::class.java)
 
         post("/$LIBRARY_ISSUE") {
 
@@ -35,7 +36,6 @@ object LibraryRoute {
     }
 
     fun Route.enableLibraryRoute(jwtData: JwtService.JwtData) {
-        val libraryRepository: LibraryRepository by KoinJavaComponent.inject(LibraryRepository::class.java)
 
         get("/$ROUTE_LIBRARY") {
             val userId = call.parameters[Constants.USER_ID]

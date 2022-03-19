@@ -6,7 +6,9 @@ import com.collegeapp.routes.books.BooksRoute.getBookByLibraryRoute
 import com.collegeapp.routes.books.BooksRoute.insertBooksRoute
 import com.collegeapp.routes.books.LibraryRoute.enableLibraryRoute
 import com.collegeapp.routes.books.LibraryRoute.issueABookLibrary
+import com.collegeapp.utils.Constants.JWT_SUBJECT
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,7 +16,6 @@ import io.ktor.server.routing.*
 fun Application.configureRouting() {
 
     val jwtData = getJwtData()
-
     routing {
         get("/") {
             call.respondText("Hello World!")
@@ -22,18 +23,19 @@ fun Application.configureRouting() {
 
         loginOrCreateUser(jwtData)
 
-        // books
-        getBookByLibraryRoute(jwtData)
-        insertBooksRoute(jwtData)
+        authenticate(JWT_SUBJECT) { // books
+            getBookByLibraryRoute(jwtData)
+            insertBooksRoute(jwtData)
 
-        // library
-        enableLibraryRoute(jwtData)
-        issueABookLibrary(jwtData)
+            // library
+            enableLibraryRoute(jwtData)
+            issueABookLibrary(jwtData)
 
 
-        // Static plugin. Try to access `/static/index.html`
-        static("/static") {
-            resources("static")
+            // Static plugin. Try to access `/static/index.html`
+            static("/static") {
+                resources("static")
+            }
         }
     }
 }
