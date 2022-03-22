@@ -2,6 +2,7 @@ package com.collegeapp.plugins
 
 import com.collegeapp.auth.getJwtData
 import com.collegeapp.routes.LoginRoute.loginOrCreateUser
+import com.collegeapp.routes.books.BooksRoute.getAllBooks
 import com.collegeapp.routes.books.BooksRoute.getBookByLibraryRoute
 import com.collegeapp.routes.books.BooksRoute.insertBooksRoute
 import com.collegeapp.routes.books.LibraryRoute.enableLibraryRoute
@@ -23,13 +24,16 @@ fun Application.configureRouting() {
 
         loginOrCreateUser(jwtData)
 
-        authenticate(JWT_SUBJECT) { // books
-            getBookByLibraryRoute(jwtData)
-            insertBooksRoute(jwtData)
+        authenticate(JWT_SUBJECT) {
+
+            // books
+            getBookByLibraryRoute()
+            insertBooksRoute()
+            getAllBooks()
 
             // library
-            enableLibraryRoute(jwtData)
-            issueABookLibrary(jwtData)
+            enableLibraryRoute()
+            issueABookLibrary()
 
 
             // Static plugin. Try to access `/static/index.html`

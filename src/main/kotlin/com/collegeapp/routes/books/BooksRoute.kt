@@ -1,6 +1,5 @@
 package com.collegeapp.routes.books
 
-import com.collegeapp.auth.JwtService
 import com.collegeapp.data.repositories.BooksRepository
 import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.requests.InsertBookRequest
@@ -20,7 +19,7 @@ object BooksRoute {
 
     // assuming the user data is valid here
 
-    fun Route.insertBooksRoute(jwtData: JwtService.JwtData) {
+    fun Route.insertBooksRoute() {
         post("/$ROUTE_INSERT_BOOKS") {
             val insertBookRequest = call.receive<InsertBookRequest>()
 
@@ -44,7 +43,7 @@ object BooksRoute {
         }
     }
 
-    fun Route.getBookByLibraryRoute(jwtData: JwtService.JwtData) {
+    fun Route.getBookByLibraryRoute() {
         get("/$ROUTE_BOOKS") {
 
             val libraryBookNumber = call.parameters[LIBRARY_BOOK_NUMBER]
@@ -59,6 +58,16 @@ object BooksRoute {
                 )
                 return@get
             }
+        }
+    }
+
+    fun Route.getAllBooks() {
+        get("/$ROUTE_BOOKS") {
+            val allBooksResponse = booksRepository.getAllBooks()
+            call.respond(
+                allBooksResponse
+            )
+            return@get
         }
     }
 

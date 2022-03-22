@@ -1,6 +1,5 @@
 package com.collegeapp.routes.books
 
-import com.collegeapp.auth.JwtService
 import com.collegeapp.data.repositories.LibraryRepository
 import com.collegeapp.models.requests.IssueBookRequest
 import com.collegeapp.utils.Constants
@@ -17,15 +16,11 @@ object LibraryRoute {
 
     private val libraryRepository: LibraryRepository by KoinJavaComponent.inject(LibraryRepository::class.java)
 
-    fun Route.issueABookLibrary(jwtData: JwtService.JwtData) {
+    fun Route.issueABookLibrary() {
 
         post("/$LIBRARY_ISSUE") {
-
-//            val userId = call.parameters[Constants.USER_ID]
-
             val issueBookRequest = call.receive<IssueBookRequest>()
 
-//             assuming the userId is valid : check the authentication part of JWT
             val bookIssueResponse =
                 libraryRepository.issueTheBookForUser(issueBookRequest.userId, issueBookRequest.libraryBookNumber)
 
@@ -35,12 +30,11 @@ object LibraryRoute {
         }
     }
 
-    fun Route.enableLibraryRoute(jwtData: JwtService.JwtData) {
+    fun Route.enableLibraryRoute() {
 
         get("/$ROUTE_LIBRARY") {
             val userId = call.parameters[Constants.USER_ID]
 
-//             assuming the userId is valid : check the authentication part of JWT
             if (userId != null) {
                 val bookIssueResponse = libraryRepository.getUserBooks(userId.toString())
                 call.respond(bookIssueResponse)

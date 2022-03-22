@@ -205,4 +205,13 @@ class CollegeDatabase {
         }
     }
 
+    suspend fun getAllBooks(): ServerResponse<List<CollegeBook>> {
+        val allBooks = booksCollection.find().toList()
+        return ServerResponse(
+            data = allBooks,
+            message = if (allBooks.isNotEmpty()) "Books Found ${allBooks.size}" else "No Books Found",
+            status = HttpStatusCode.OK.value
+        )
+    }
+
 }

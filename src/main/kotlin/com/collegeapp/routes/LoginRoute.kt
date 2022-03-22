@@ -18,6 +18,7 @@ object LoginRoute {
 
         post("/$ROUTE_LOGIN") {
 
+            // save google uid here?
             val userEmail = call.parameters[Constants.EMAIL]
             val userName = call.parameters[Constants.NAME]
             val userImageUrl = call.parameters[Constants.IMAGE_URL].toString()
