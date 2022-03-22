@@ -17,7 +17,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.setValue
 import java.util.concurrent.TimeUnit
-import kotlin.time.DurationUnit
 
 class CollegeDatabase {
 
@@ -81,7 +80,7 @@ class CollegeDatabase {
 
         var bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         if (bookToInsert == null)
-            return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.OK.value)
+            return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.NoContent.value)
         else {
 
             if (!bookToInsert.isAvailableToIssue) {
@@ -98,13 +97,13 @@ class CollegeDatabase {
                     ServerResponse(
                         data = Pair(ownerUser.email, ownerUser.name),
                         message = "Book Unavailable to Issue",
-                        status = HttpStatusCode.OK.value
+                        status = HttpStatusCode.NoContent.value
                     )
                 } else {
                     ServerResponse(
                         data = null,
                         message = "Something Wrong Happened 420",
-                        status = HttpStatusCode.OK.value
+                        status = HttpStatusCode.NotAcceptable.value
                     )
                 }
             }
@@ -144,14 +143,16 @@ class CollegeDatabase {
         }
     }
 
-    suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<CollegeBook?> {
+    suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<Any?> {
         val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         return ServerResponse(
-            data = book,
+            data = book ?: "",
             message = if (book != null) {
                 "Book found"
             } else "No Book Found!",
-            status = HttpStatusCode.OK.value
+            status = if (book != null) {
+                HttpStatusCode.OK.value
+            } else HttpStatusCode.NoContent.value
         )
     }
 
@@ -169,7 +170,7 @@ class CollegeDatabase {
 
     suspend fun insertBook(
         bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long
-    ): String {
+    ): ServerResponse<String> {
 
         val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         if (book != null) {
@@ -179,7 +180,11 @@ class CollegeDatabase {
                 maximumDaysAllowed = maximumDaysAllowed
             )
             booksCollection.updateOne(CollegeBook::libraryBookNumber eq libraryBookNumber, updatedBook)
-            return updatedBook.bookId
+            return ServerResponse(
+                data = updatedBook.bookId,
+                message = "Book Updated ",
+                status = HttpStatusCode.OK.value
+            )
         } else {
             val newBookId = ObjectId().toString()
 
@@ -192,7 +197,11 @@ class CollegeDatabase {
                     isAvailableToIssue = true
                 )
             )
-            return newBookId
+            return ServerResponse(
+                data = newBookId,
+                message = "Book Insert Success",
+                status = HttpStatusCode.OK.value
+            )
         }
     }
 

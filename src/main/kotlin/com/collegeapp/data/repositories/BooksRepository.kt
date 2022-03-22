@@ -2,7 +2,6 @@ package com.collegeapp.data.repositories
 
 import com.collegeapp.data.CollegeDatabase
 import com.collegeapp.models.ServerResponse
-import com.collegeapp.models.local.CollegeBook
 
 interface BooksRepository {
 
@@ -11,9 +10,9 @@ interface BooksRepository {
         bookName: String,
         libraryBookNumber: Long,
         maximumDaysAllowed: Long
-    ): String
+    ): ServerResponse<String>
 
-    suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long) : ServerResponse<CollegeBook?>
+    suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long) : ServerResponse<Any?>
 }
 
 class BooksRepositoryImpl constructor(
@@ -21,11 +20,11 @@ class BooksRepositoryImpl constructor(
 ) : BooksRepository {
 
 
-    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long): String {
+    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long): ServerResponse<String> {
         return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed)
     }
 
-    override suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long): ServerResponse<CollegeBook?> {
+    override suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long): ServerResponse<Any?> {
         return collegeDatabase.getBookFromBookLibraryNumber(libraryBookNumber)
     }
 
