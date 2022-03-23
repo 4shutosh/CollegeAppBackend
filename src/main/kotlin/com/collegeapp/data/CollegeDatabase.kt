@@ -3,6 +3,7 @@ package com.collegeapp.data
 import com.collegeapp.auth.JwtService
 import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.local.CollegeBook
+import com.collegeapp.models.local.CollegeBookOwnerData
 import com.collegeapp.models.local.UserBookData
 import com.collegeapp.models.local.UserLibraryData
 import com.collegeapp.models.responses.CollegeUser
@@ -87,7 +88,7 @@ class CollegeDatabase {
             else {
 
                 if (!bookToInsert.isAvailableToIssue) {
-                    if (userId == bookToInsert.ownerUserId) {
+                    if (userId == bookToInsert.ownerData?.userId) {
                         return ServerResponse(
                             data = userLibrary,
                             message = "You've Already Issued this Book",
@@ -111,14 +112,21 @@ class CollegeDatabase {
                     }
                 }
 
-                // updating the bookToInsert in repository as not available to issue
-                bookToInsert =
-                    bookToInsert.copy(isAvailableToIssue = false, ownerUserId = userId, ownerUserEmail = user.email)
-                booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
 
                 // this is GMT
                 val currentTimeStamp = System.currentTimeMillis()
                 val returnTimeStamp = currentTimeStamp + TimeUnit.DAYS.toMillis(bookToInsert.maximumDaysAllowed)
+
+                // updating the bookToInsert in repository as not available to issue
+                bookToInsert =
+                    bookToInsert.copy(isAvailableToIssue = false, ownerData = CollegeBookOwnerData(
+                        userId = user.userId,
+                        email = user.email,
+                        returnTimeStamp = returnTimeStamp
+
+                    ))
+                booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
+
                 val userBookDataToInsert = UserBookData(bookToInsert, System.currentTimeMillis(), returnTimeStamp)
 
                 var responseMessage = "User Library Updated"
