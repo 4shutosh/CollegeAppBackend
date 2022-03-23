@@ -21,12 +21,14 @@ data class CollegeBookOwnerData(
 data class UserLibraryData(
     @BsonId
     val id: String, // this id is equal to user id
-    val books: List<UserBookData>
+    val userBookDataList: List<UserBookData>,
+    val totalPenalty: Int = 0
 )
 
 
 data class UserBookData(
     val book: CollegeBook,
     val issueTimeStamp: Long,
-    val returnTimeStamp: Long
+    val returnTimeStamp: Long,
+    var penalty: Int = 0
 )

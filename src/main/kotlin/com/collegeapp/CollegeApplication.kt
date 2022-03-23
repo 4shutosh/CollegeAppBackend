@@ -5,6 +5,7 @@ import com.collegeapp.plugins.configureAuthentication
 import com.collegeapp.plugins.configureContentNegotiation
 import com.collegeapp.plugins.configureRouting
 import com.collegeapp.plugins.configureSecurity
+import com.collegeapp.services.LibraryService.startLibraryService
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -44,5 +45,7 @@ class CollegeApplication {
         configureSecurity()
         configureAuthentication()
         configureRouting()
+
+        startLibraryService()
     }
 }

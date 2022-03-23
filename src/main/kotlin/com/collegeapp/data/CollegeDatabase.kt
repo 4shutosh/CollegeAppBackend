@@ -119,12 +119,14 @@ class CollegeDatabase {
 
                 // updating the bookToInsert in repository as not available to issue
                 bookToInsert =
-                    bookToInsert.copy(isAvailableToIssue = false, ownerData = CollegeBookOwnerData(
-                        userId = user.userId,
-                        email = user.email,
-                        returnTimeStamp = returnTimeStamp
+                    bookToInsert.copy(
+                        isAvailableToIssue = false, ownerData = CollegeBookOwnerData(
+                            userId = user.userId,
+                            email = user.email,
+                            returnTimeStamp = returnTimeStamp
 
-                    ))
+                        )
+                    )
                 booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
 
                 val userBookDataToInsert = UserBookData(bookToInsert, System.currentTimeMillis(), returnTimeStamp)
@@ -138,12 +140,12 @@ class CollegeDatabase {
                     responseMessage = "User Library Created"
 
                 } else {
-                    val userBooksMutable = userLibrary.books.toMutableList()
+                    val userBooksMutable = userLibrary.userBookDataList.toMutableList()
                     if (userBooksMutable.find { it.book.libraryBookNumber == libraryBookNumber } == null) {
                         userBooksMutable.add(userBookDataToInsert)
                         libraryCollection.updateOne(
                             UserLibraryData::id eq userId,
-                            setValue(UserLibraryData::books, userBooksMutable)
+                            setValue(UserLibraryData::userBookDataList, userBooksMutable)
                         )
                     } else responseMessage = "Book Already In the User Library"
                 }
@@ -175,8 +177,8 @@ class CollegeDatabase {
             userID
         )
         return ServerResponse(
-            data = userLibraryData?.books ?: emptyList(),
-            message = if (userLibraryData?.books != null) "Books Found" else "No Books Found",
+            data = userLibraryData?.userBookDataList ?: emptyList(),
+            message = if (userLibraryData?.userBookDataList != null) "Books Found" else "No Books Found",
             status = HttpStatusCode.OK.value
         )
     }
@@ -225,6 +227,28 @@ class CollegeDatabase {
             message = if (allBooks.isNotEmpty()) "Books Found ${allBooks.size}" else "No Books Found",
             status = HttpStatusCode.OK.value
         )
+    }
+
+    suspend fun addPenaltyToUserLibraryForBook(userId: String, bookId: String) {
+        val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
+        if (userLibrary != null) {
+            val userBookData = userLibrary.userBookDataList.find { it.book.bookId == bookId }
+            val index = userLibrary.userBookDataList.indexOf(userBookData)
+            if (userBookData != null) {
+                val updatedPenalty = userBookData.penalty + 1
+                libraryCollection.updateOne(
+                    "{_id: '${ObjectId(userId)}'",
+                    "\$set: {userBookDataList.$index.penalty: '$updatedPenalty'}"
+                )
+
+                val updatedTotalPenalty = userLibrary.totalPenalty + 1
+                libraryCollection.updateOne(
+                    UserLibraryData::id eq userId,
+                    setValue(UserLibraryData::totalPenalty, updatedTotalPenalty)
+                )
+            }
+        }
+
     }
 
 }
