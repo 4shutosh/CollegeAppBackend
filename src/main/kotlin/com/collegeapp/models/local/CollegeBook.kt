@@ -9,7 +9,8 @@ data class CollegeBook(
     var bookName: String,
     val maximumDaysAllowed: Long,
     val isAvailableToIssue: Boolean,
-    val ownerUserId: String? = null
+    val ownerUserId: String? = null,
+    val ownerUserEmail: String? = null,
 )
 
 data class UserLibraryData(

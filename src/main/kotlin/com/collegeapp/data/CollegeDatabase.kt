@@ -77,69 +77,74 @@ class CollegeDatabase {
 
     suspend fun checkForBookAndIssue(userId: String, libraryBookNumber: Long): ServerResponse<Any> {
         val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
+        val user = userCollection.findOne(CollegeUser::userId eq userId)
+        if (user == null) {
+            return ServerResponse(null, "Invalid User", HttpStatusCode.Unauthorized.value)
+        } else {
+            var bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+            if (bookToInsert == null)
+                return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.NoContent.value)
+            else {
 
-        var bookToInsert = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
-        if (bookToInsert == null)
-            return ServerResponse(null, "Invalid Book Library Number", HttpStatusCode.NoContent.value)
-        else {
+                if (!bookToInsert.isAvailableToIssue) {
+                    if (userId == bookToInsert.ownerUserId) {
+                        return ServerResponse(
+                            data = userLibrary,
+                            message = "You've Already Issued this Book",
+                            status = HttpStatusCode.OK.value
+                        )
+                    }
 
-            if (!bookToInsert.isAvailableToIssue) {
-                if (userId == bookToInsert.ownerUserId) {
-                    return ServerResponse(
-                        data = userLibrary,
-                        message = "You've Already Issued this Book",
-                        status = HttpStatusCode.OK.value
-                    )
+                    val ownerUser = userCollection.findOne(CollegeUser::userId eq userId)
+                    return if (ownerUser != null) {
+                        ServerResponse(
+                            data = Pair(ownerUser.email, ownerUser.name),
+                            message = "Book Unavailable to Issue",
+                            status = HttpStatusCode.NoContent.value
+                        )
+                    } else {
+                        ServerResponse(
+                            data = null,
+                            message = "Something Wrong Happened 420",
+                            status = HttpStatusCode.NotAcceptable.value
+                        )
+                    }
                 }
 
-                val ownerUser = userCollection.findOne(CollegeUser::userId eq userId)
-                return if (ownerUser != null) {
-                    ServerResponse(
-                        data = Pair(ownerUser.email, ownerUser.name),
-                        message = "Book Unavailable to Issue",
-                        status = HttpStatusCode.NoContent.value
-                    )
+                // updating the bookToInsert in repository as not available to issue
+                bookToInsert =
+                    bookToInsert.copy(isAvailableToIssue = false, ownerUserId = userId, ownerUserEmail = user.email)
+                booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
+
+                // this is GMT
+                val currentTimeStamp = System.currentTimeMillis()
+                val returnTimeStamp = currentTimeStamp + TimeUnit.DAYS.toMillis(bookToInsert.maximumDaysAllowed)
+                val userBookDataToInsert = UserBookData(bookToInsert, System.currentTimeMillis(), returnTimeStamp)
+
+                var responseMessage = "User Library Updated"
+
+                if (userLibrary == null) {
+                    val booksListToInsert = listOf(userBookDataToInsert)
+                    libraryCollection.insertOne(UserLibraryData(userId, booksListToInsert))
+
+                    responseMessage = "User Library Created"
+
                 } else {
-                    ServerResponse(
-                        data = null,
-                        message = "Something Wrong Happened 420",
-                        status = HttpStatusCode.NotAcceptable.value
-                    )
+                    val userBooksMutable = userLibrary.books.toMutableList()
+                    if (userBooksMutable.find { it.book.libraryBookNumber == libraryBookNumber } == null) {
+                        userBooksMutable.add(userBookDataToInsert)
+                        libraryCollection.updateOne(
+                            UserLibraryData::id eq userId,
+                            setValue(UserLibraryData::books, userBooksMutable)
+                        )
+                    } else responseMessage = "Book Already In the User Library"
                 }
+                return ServerResponse(
+                    libraryCollection.findOne(UserLibraryData::id eq userId),
+                    responseMessage,
+                    HttpStatusCode.OK.value
+                )
             }
-
-            // updating the bookToInsert in repository as not available to issue
-            bookToInsert = bookToInsert.copy(isAvailableToIssue = false, ownerUserId = userId)
-            booksCollection.updateOne(CollegeBook::bookId eq bookToInsert.bookId, bookToInsert)
-
-            // this is GMT
-            val currentTimeStamp = System.currentTimeMillis()
-            val returnTimeStamp = currentTimeStamp + TimeUnit.DAYS.toMillis(bookToInsert.maximumDaysAllowed)
-            val userBookDataToInsert = UserBookData(bookToInsert, System.currentTimeMillis(), returnTimeStamp)
-
-            var responseMessage = "User Library Updated"
-
-            if (userLibrary == null) {
-                val booksListToInsert = listOf(userBookDataToInsert)
-                libraryCollection.insertOne(UserLibraryData(userId, booksListToInsert))
-
-                responseMessage = "User Library Created"
-
-            } else {
-                val userBooksMutable = userLibrary.books.toMutableList()
-                if (userBooksMutable.find { it.book.libraryBookNumber == libraryBookNumber } == null) {
-                    userBooksMutable.add(userBookDataToInsert)
-                    libraryCollection.updateOne(
-                        UserLibraryData::id eq userId,
-                        setValue(UserLibraryData::books, userBooksMutable)
-                    )
-                } else responseMessage = "Book Already In the User Library"
-            }
-            return ServerResponse(
-                libraryCollection.findOne(UserLibraryData::id eq userId),
-                responseMessage,
-                HttpStatusCode.OK.value
-            )
         }
     }
 
