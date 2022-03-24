@@ -4,9 +4,10 @@ import com.collegeapp.auth.getJwtData
 import com.collegeapp.routes.LoginRoute.loginOrCreateUser
 import com.collegeapp.routes.books.BooksRoute.getAllBooks
 import com.collegeapp.routes.books.BooksRoute.getBookByLibraryRoute
-import com.collegeapp.routes.books.BooksRoute.insertBooksRoute
+import com.collegeapp.routes.books.BooksRoute.insertOrUpdateBook
 import com.collegeapp.routes.books.LibraryRoute.enableLibraryRoute
 import com.collegeapp.routes.books.LibraryRoute.issueABookLibrary
+import com.collegeapp.routes.books.LibraryRoute.returnAnIssuedBookRoute
 import com.collegeapp.utils.Constants.JWT_SUBJECT
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -28,12 +29,13 @@ fun Application.configureRouting() {
 
             // books
             getBookByLibraryRoute()
-            insertBooksRoute()
+            insertOrUpdateBook()
             getAllBooks()
 
             // library
             enableLibraryRoute()
             issueABookLibrary()
+            returnAnIssuedBookRoute()
 
 
             // Static plugin. Try to access `/static/index.html`

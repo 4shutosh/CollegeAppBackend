@@ -27,7 +27,9 @@ object Constants {
 
         const val ROUTE_BOOKS = "books"
         const val ROUTE_INSERT_BOOKS = "books/insert"
+        const val ROUTE_DELETE_BOOKS = "books/delete"
         const val ROUTE_LIBRARY = "library"
         const val LIBRARY_ISSUE = "library/issue"
+        const val LIBRARY_RETURN = "library/return"
     }
 }

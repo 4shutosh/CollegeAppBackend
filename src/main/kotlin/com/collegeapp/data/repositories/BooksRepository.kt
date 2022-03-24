@@ -7,7 +7,7 @@ import com.collegeapp.models.local.CollegeBook
 interface BooksRepository {
 
     // return book id or the complete book data
-    suspend fun insertBook(
+    suspend fun insertOrUpdateBook(
         bookName: String,
         libraryBookNumber: Long,
         maximumDaysAllowed: Long
@@ -23,8 +23,8 @@ class BooksRepositoryImpl constructor(
 ) : BooksRepository {
 
 
-    override suspend fun insertBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long): ServerResponse<String> {
-        return collegeDatabase.insertBook(bookName, libraryBookNumber, maximumDaysAllowed)
+    override suspend fun insertOrUpdateBook(bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long): ServerResponse<String> {
+        return collegeDatabase.insertOrUpdateBook(bookName, libraryBookNumber, maximumDaysAllowed)
     }
 
     override suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long): ServerResponse<Any?> {

@@ -2,8 +2,10 @@ package com.collegeapp.routes.books
 
 import com.collegeapp.data.repositories.LibraryRepository
 import com.collegeapp.models.requests.IssueBookRequest
+import com.collegeapp.models.requests.ReturnBookRequest
 import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.EndPoints.LIBRARY_ISSUE
+import com.collegeapp.utils.Constants.EndPoints.LIBRARY_RETURN
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_LIBRARY
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -42,6 +44,18 @@ object LibraryRoute {
 
             return@get
 
+        }
+    }
+
+    fun Route.returnAnIssuedBookRoute() {
+        post("/$LIBRARY_RETURN") {
+            val returnBookRequest = call.receive<ReturnBookRequest>()
+            val returnBookResponse =
+                libraryRepository.returnTheBookForUser(returnBookRequest.userEmail, returnBookRequest.libraryBookNumber)
+
+            call.respond(returnBookResponse)
+
+            return@post
         }
     }
 }

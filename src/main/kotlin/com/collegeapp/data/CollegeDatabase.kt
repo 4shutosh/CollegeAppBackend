@@ -172,18 +172,18 @@ class CollegeDatabase {
     }
 
 
-    suspend fun getAllUserBooks(userID: String): ServerResponse<List<UserBookData>> {
+    suspend fun getAllUserBooks(userID: String): ServerResponse<Any> {
         val userLibraryData = libraryCollection.findOneById(
             userID
         )
         return ServerResponse(
-            data = userLibraryData?.userBookDataList ?: emptyList(),
+            data = userLibraryData,
             message = if (userLibraryData?.userBookDataList != null) "Books Found" else "No Books Found",
             status = HttpStatusCode.OK.value
         )
     }
 
-    suspend fun insertBook(
+    suspend fun insertOrUpdateBook(
         bookName: String, libraryBookNumber: Long, maximumDaysAllowed: Long
     ): ServerResponse<String> {
 
@@ -232,13 +232,14 @@ class CollegeDatabase {
     suspend fun addPenaltyToUserLibraryForBook(userId: String, bookId: String) {
         val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
         if (userLibrary != null) {
-            val userBookData = userLibrary.userBookDataList.find { it.book.bookId == bookId }
-            val index = userLibrary.userBookDataList.indexOf(userBookData)
-            if (userBookData != null) {
-                val updatedPenalty = userBookData.penalty + 1
-                libraryCollection.updateOne(
-                    "{_id: '${ObjectId(userId)}'",
-                    "\$set: {userBookDataList.$index.penalty: '$updatedPenalty'}"
+            val userBooks = userLibrary.userBookDataList.toMutableList()
+            val userBookToUpdate = userBooks.find { it.book.bookId == bookId }
+            val userBookToUpdateIndex = userBooks.indexOf(userBookToUpdate)
+            if (userBookToUpdate != null) {
+                userBookToUpdate.penalty += 1
+                userBooks[userBookToUpdateIndex] = userBookToUpdate
+                libraryCollection.updateOneById(
+                    userId, setValue(UserLibraryData::userBookDataList, userBooks)
                 )
 
                 val updatedTotalPenalty = userLibrary.totalPenalty + 1
@@ -248,6 +249,66 @@ class CollegeDatabase {
                 )
             }
         }
+
+    }
+
+    suspend fun returnBook(userEmail: String, libraryBookNumber: Long): ServerResponse<Any> {
+        val user = userCollection.findOne(CollegeUser::email eq userEmail)
+        if (user != null) {
+            val userLibrary = libraryCollection.findOne(UserLibraryData::id eq user.userId)
+            val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+
+            if (book != null) {
+                if (userLibrary != null) {
+                    if (!book.isAvailableToIssue) {
+                        val userBooks = userLibrary.userBookDataList.toMutableList()
+                        val bookToDelete = userBooks.find { it.book.libraryBookNumber == libraryBookNumber }
+
+                        userBooks.remove(bookToDelete)
+
+                        libraryCollection.updateOne(
+                            UserLibraryData::id eq user.userId,
+                            setValue(UserLibraryData::userBookDataList, userBooks)
+                        )
+
+                        booksCollection.updateOne(
+                            CollegeBook::libraryBookNumber eq libraryBookNumber,
+                            book.copy(isAvailableToIssue = true, ownerData = null)
+                        )
+
+                        return ServerResponse(
+                            data = null,
+                            message = "Book Return Success!",
+                            status = HttpStatusCode.OK.value
+                        )
+                    } else {
+                        return ServerResponse(
+                            data = null,
+                            message = "Book not issued! Check libraryBookNumber again",
+                            status = HttpStatusCode.OK.value
+                        )
+
+                    }
+                } else {
+                    return ServerResponse(
+                        data = null,
+                        message = "User Library Not Found!",
+                        status = HttpStatusCode.OK.value
+                    )
+                }
+            } else {
+                return ServerResponse(
+                    data = null,
+                    message = "No Book Found for this number $libraryBookNumber!",
+                    status = HttpStatusCode.OK.value
+                )
+            }
+        }
+        return ServerResponse(
+            data = null,
+            message = "No User Found of this email $userEmail!",
+            status = HttpStatusCode.OK.value
+        )
 
     }
 

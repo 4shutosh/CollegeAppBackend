@@ -2,14 +2,14 @@ package com.collegeapp.data.repositories
 
 import com.collegeapp.data.CollegeDatabase
 import com.collegeapp.models.ServerResponse
-import com.collegeapp.models.local.UserBookData
 
 interface LibraryRepository {
 
     // todo return the confirmation data
     suspend fun issueTheBookForUser(userId: String, libraryBookNumber: Long): ServerResponse<Any>
+    suspend fun returnTheBookForUser(userEmail: String, libraryBookNumber: Long): ServerResponse<Any>
 
-    suspend fun getUserBooks(userId: String): ServerResponse<List<UserBookData>>
+    suspend fun getUserBooks(userId: String): ServerResponse<Any>
 }
 
 class LibraryRepositoryImpl constructor(
@@ -20,7 +20,11 @@ class LibraryRepositoryImpl constructor(
         return collegeDatabase.checkForBookAndIssue(userId, libraryBookNumber)
     }
 
-    override suspend fun getUserBooks(userId: String): ServerResponse<List<UserBookData>> {
+    override suspend fun returnTheBookForUser(userEmail: String, libraryBookNumber: Long): ServerResponse<Any> {
+        return collegeDatabase.returnBook(userEmail, libraryBookNumber)
+    }
+
+    override suspend fun getUserBooks(userId: String): ServerResponse<Any> {
         return collegeDatabase.getAllUserBooks(userId)
     }
 

@@ -19,14 +19,14 @@ object BooksRoute {
 
     // assuming the user data is valid here
 
-    fun Route.insertBooksRoute() {
+    fun Route.insertOrUpdateBook() {
         post("/$ROUTE_INSERT_BOOKS") {
             val insertBookRequest = call.receive<InsertBookRequest>()
 
             println("Insert Book Request found $insertBookRequest")
 
             // assuming the userId is valid : check the authentication part of JWT
-            val bookIdString = booksRepository.insertBook(
+            val bookIdString = booksRepository.insertOrUpdateBook(
                 insertBookRequest.bookName,
                 insertBookRequest.libraryBookNumber,
                 insertBookRequest.daysAllowed
@@ -70,7 +70,6 @@ object BooksRoute {
             return@get
         }
     }
-
 }
 
 

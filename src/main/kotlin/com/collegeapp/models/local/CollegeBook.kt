@@ -20,7 +20,7 @@ data class CollegeBookOwnerData(
 
 data class UserLibraryData(
     @BsonId
-    val id: String, // this id is equal to user id
+    val id: String, // this id is equal to userEmail
     val userBookDataList: List<UserBookData>,
     val totalPenalty: Int = 0
 )
