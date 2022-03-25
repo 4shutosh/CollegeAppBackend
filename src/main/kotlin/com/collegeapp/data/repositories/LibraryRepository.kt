@@ -10,6 +10,8 @@ interface LibraryRepository {
     suspend fun returnTheBookForUser(userEmail: String, libraryBookNumber: Long): ServerResponse<Any>
 
     suspend fun getUserBooks(userId: String): ServerResponse<Any>
+
+    suspend fun updateUserPenalty(userEmail: String, penalty: Int): ServerResponse<Any>
 }
 
 class LibraryRepositoryImpl constructor(
@@ -28,4 +30,7 @@ class LibraryRepositoryImpl constructor(
         return collegeDatabase.getAllUserBooks(userId)
     }
 
+    override suspend fun updateUserPenalty(userEmail: String, penalty: Int): ServerResponse<Any> {
+        return collegeDatabase.updateUserLibraryTotalPenalty(userEmail, penalty)
+    }
 }

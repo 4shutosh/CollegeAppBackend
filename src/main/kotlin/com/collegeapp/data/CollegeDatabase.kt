@@ -312,4 +312,33 @@ class CollegeDatabase {
 
     }
 
+    suspend fun updateUserLibraryTotalPenalty(userEmail: String, penalty: Int): ServerResponse<Any> {
+        val user = userCollection.findOne(CollegeUser::email eq userEmail)
+            ?: return ServerResponse(
+                data = null,
+                message = "No user Found!",
+                status = HttpStatusCode.OK.value
+            )
+
+        if (libraryCollection.findOne(UserLibraryData::id eq user.userId) == null)
+            return ServerResponse(
+                data = null,
+                message = "No user library Found! No books issued yet?",
+                status = HttpStatusCode.OK.value
+            )
+
+
+        libraryCollection.updateOne(
+            UserLibraryData::id eq user.userId,
+            setValue(UserLibraryData::totalPenalty, penalty)
+        )
+
+        val updatedLibrary = libraryCollection.findOne(UserLibraryData::id eq user.userId)
+
+        return ServerResponse(
+            data = updatedLibrary,
+            message = "Penalty Updated!",
+            status = HttpStatusCode.OK.value
+        )
+    }
 }

@@ -3,8 +3,10 @@ package com.collegeapp.routes.books
 import com.collegeapp.data.repositories.LibraryRepository
 import com.collegeapp.models.requests.IssueBookRequest
 import com.collegeapp.models.requests.ReturnBookRequest
+import com.collegeapp.models.requests.UpdateLibraryCollection
 import com.collegeapp.utils.Constants
 import com.collegeapp.utils.Constants.EndPoints.LIBRARY_ISSUE
+import com.collegeapp.utils.Constants.EndPoints.LIBRARY_PENALTY
 import com.collegeapp.utils.Constants.EndPoints.LIBRARY_RETURN
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_LIBRARY
 import io.ktor.http.*
@@ -58,4 +60,17 @@ object LibraryRoute {
             return@post
         }
     }
+
+    fun Route.updateUserPenalty() {
+        post("/$LIBRARY_PENALTY") {
+            val updatePenaltyRequest = call.receive<UpdateLibraryCollection>()
+            val updatePenaltyResponse =
+                libraryRepository.updateUserPenalty(updatePenaltyRequest.userEmail, updatePenaltyRequest.penalty)
+
+            call.respond(updatePenaltyResponse)
+
+            return@post
+        }
+    }
+
 }
