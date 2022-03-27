@@ -32,6 +32,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-serialization-gson:$ktor_version")
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
@@ -42,6 +43,7 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:3.1.5")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.0.0-beta-1")
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+    implementation("io.ktor:ktor-server-cors-jvm:2.0.0-beta-1")
 
     //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 //    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
