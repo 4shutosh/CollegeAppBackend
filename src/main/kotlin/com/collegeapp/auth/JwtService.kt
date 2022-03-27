@@ -52,9 +52,9 @@ class JwtService constructor(
 }
 
 fun Application.getJwtData(): JwtService.JwtData {
-    val jwtSecret = System.getenv("jwt.secret")
-    val jwtIssuer = System.getenv("jwt.issuer")
-    val jwtRealm = System.getenv("jwt.realm")
+    val jwtSecret = System.getenv("JWT_SECRET")
+    val jwtIssuer = System.getenv("JWT_ISSUER")
+    val jwtRealm = System.getenv("JWT_REALM")
 
     return JwtService.JwtData(
         secret = jwtSecret, jwtIssuer = jwtIssuer, jwtRealm = jwtRealm
