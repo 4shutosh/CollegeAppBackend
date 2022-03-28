@@ -13,7 +13,7 @@ interface BooksRepository {
         maximumDaysAllowed: Long
     ): ServerResponse<String>
 
-    suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long) : ServerResponse<Any?>
+    suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long) : ServerResponse<Any>
 
     suspend fun getAllBooks(): ServerResponse<List<CollegeBook>>
 }
@@ -27,7 +27,7 @@ class BooksRepositoryImpl constructor(
         return collegeDatabase.insertOrUpdateBook(bookName, libraryBookNumber, maximumDaysAllowed)
     }
 
-    override suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long): ServerResponse<Any?> {
+    override suspend fun getBookFromLibraryBookNumber(libraryBookNumber: Long): ServerResponse<Any> {
         return collegeDatabase.getBookFromBookLibraryNumber(libraryBookNumber)
     }
 
