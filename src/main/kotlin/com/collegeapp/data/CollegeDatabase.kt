@@ -158,7 +158,7 @@ class CollegeDatabase {
         }
     }
 
-    suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<Any?> {
+    suspend fun getBookFromBookLibraryNumber(libraryBookNumber: Long): ServerResponse<Any> {
         val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
         return ServerResponse(
             data = book ?: "",
@@ -173,12 +173,19 @@ class CollegeDatabase {
 
 
     suspend fun getAllUserBooks(userID: String): ServerResponse<Any> {
-        val userLibraryData = libraryCollection.findOneById(
+        var userLibraryData = libraryCollection.findOneById(
+            userID
+        )
+        if (userLibraryData == null) {
+            libraryCollection.insertOne(UserLibraryData(userID, emptyList()))
+        }
+
+        userLibraryData = libraryCollection.findOneById(
             userID
         )
         return ServerResponse(
             data = userLibraryData,
-            message = if (userLibraryData?.userBookDataList != null) "Books Found" else "No Books Found",
+            message = if (userLibraryData?.userBookDataList != null && userLibraryData.userBookDataList.isNotEmpty()) "Books Found" else "No Books Found",
             status = HttpStatusCode.OK.value
         )
     }
@@ -188,6 +195,7 @@ class CollegeDatabase {
     ): ServerResponse<String> {
 
         val book = booksCollection.findOne(CollegeBook::libraryBookNumber eq libraryBookNumber)
+        // todo check valid maximumDaysAllowed here
         if (book != null) {
             val updatedBook = book.copy(
                 libraryBookNumber = libraryBookNumber,
