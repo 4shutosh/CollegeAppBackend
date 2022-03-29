@@ -2,10 +2,8 @@ package com.collegeapp.data
 
 import com.collegeapp.auth.JwtService
 import com.collegeapp.models.ServerResponse
-import com.collegeapp.models.local.CollegeBook
-import com.collegeapp.models.local.CollegeBookOwnerData
-import com.collegeapp.models.local.UserBookData
-import com.collegeapp.models.local.UserLibraryData
+import com.collegeapp.models.local.*
+import com.collegeapp.models.requests.InsertCourseRequest
 import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.utils.CollegeLogger
 import com.collegeapp.utils.Constants.MONGO_DB_NAME
@@ -29,6 +27,7 @@ class CollegeDatabase {
     private val userCollection = database.getCollection<CollegeUser>()
     private val libraryCollection = database.getCollection<UserLibraryData>()
     private val booksCollection = database.getCollection<CollegeBook>()
+    private val coursesCollection = database.getCollection<CollegeCourse>()
 
     suspend fun checkForUser(
         jwtToken: JwtService.JwtData, userEmail: String, userName: String, userImageUrl: String
@@ -209,6 +208,7 @@ class CollegeDatabase {
                 status = HttpStatusCode.OK.value
             )
         } else {
+            // always unique
             val newBookId = ObjectId().toString()
 
             booksCollection.insertOne(
@@ -237,6 +237,9 @@ class CollegeDatabase {
         )
     }
 
+    /**
+     * adds penalty for each of the user book in [UserBookData::penalty] as well as the totalPenalty field in the [UserLibraryData::totalPenalty]
+     */
     suspend fun addPenaltyToUserLibraryForBook(userId: String, bookId: String) {
         val userLibrary = libraryCollection.findOne(UserLibraryData::id eq userId)
         if (userLibrary != null) {
@@ -348,5 +351,53 @@ class CollegeDatabase {
             message = "Penalty Updated!",
             status = HttpStatusCode.OK.value
         )
+    }
+
+    suspend fun getAllCourses(): ServerResponse<List<CollegeCourse>> {
+        val courses = coursesCollection.find().toList()
+
+        return ServerResponse(
+            data = courses,
+            message = if (courses.isNotEmpty()) "Courses Found" else "No Courses Found",
+            status = HttpStatusCode.OK.value
+        )
+    }
+
+    suspend fun insertOrUpdateCourse(insertCourseRequest: InsertCourseRequest): ServerResponse<Any> {
+        val course = coursesCollection.findOne(CollegeCourse::code eq insertCourseRequest.courseCode)
+        if (course != null) {
+            val updatedCourse = course.copy(
+                name = insertCourseRequest.courseName,
+                description = insertCourseRequest.courseDescription,
+                facultyName = insertCourseRequest.courseFacultyName
+            )
+            coursesCollection.updateOne(
+                CollegeCourse::id eq course.id,
+                updatedCourse
+            )
+            return ServerResponse(
+                data = updatedCourse,
+                "Course Updated",
+                HttpStatusCode.OK.value
+            )
+        } else {
+            val newCourseId = ObjectId().toString().toLong()
+
+            val courseToInsert = CollegeCourse(
+                id = newCourseId,
+                name = insertCourseRequest.courseName,
+                code = insertCourseRequest.courseCode,
+                description = insertCourseRequest.courseDescription,
+                facultyName = insertCourseRequest.courseFacultyName
+            )
+
+            coursesCollection.insertOne(courseToInsert)
+
+            return ServerResponse(
+                data = courseToInsert,
+                message = "Course Added",
+                HttpStatusCode.OK.value
+            )
+        }
     }
 }

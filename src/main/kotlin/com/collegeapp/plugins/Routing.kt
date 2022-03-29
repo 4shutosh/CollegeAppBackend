@@ -9,6 +9,8 @@ import com.collegeapp.routes.books.LibraryRoute.enableLibraryRoute
 import com.collegeapp.routes.books.LibraryRoute.issueABookLibrary
 import com.collegeapp.routes.books.LibraryRoute.returnAnIssuedBookRoute
 import com.collegeapp.routes.books.LibraryRoute.updateUserPenalty
+import com.collegeapp.routes.courses.CourseRoute.getAllCourses
+import com.collegeapp.routes.courses.CourseRoute.insertUpdateCourse
 import com.collegeapp.utils.Constants.JWT_SUBJECT
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -38,6 +40,10 @@ fun Application.configureRouting() {
             issueABookLibrary()
             returnAnIssuedBookRoute()
             updateUserPenalty()
+
+            // courses
+            getAllCourses()
+            insertUpdateCourse()
 
 
             // Static plugin. Try to access `/static/index.html`

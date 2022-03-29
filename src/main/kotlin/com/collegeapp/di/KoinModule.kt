@@ -9,6 +9,7 @@ val koinModule = module {
     single { provideUserRepository(get() as CollegeDatabase) }
     single { provideBooksRepository(get() as CollegeDatabase) }
     single { provideLibraryRepository(get() as CollegeDatabase) }
+    single { provideCourseRepository(get() as CollegeDatabase) }
 }
 
 private fun provideCollegeDatabase(): CollegeDatabase = CollegeDatabase()
@@ -24,3 +25,7 @@ private fun provideBooksRepository(
 private fun provideLibraryRepository(
     collegeDatabase: CollegeDatabase
 ): LibraryRepository = LibraryRepositoryImpl(collegeDatabase)
+
+private fun provideCourseRepository(
+    collegeDatabase: CollegeDatabase
+): CourseRepository = CourseRepositoryImpl(collegeDatabase)

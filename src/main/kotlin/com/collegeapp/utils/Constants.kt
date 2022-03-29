@@ -32,5 +32,8 @@ object Constants {
         const val LIBRARY_ISSUE = "library/issue"
         const val LIBRARY_RETURN = "library/return"
         const val LIBRARY_PENALTY = "library/penalty"
+
+        const val ROUTE_COURSES = "courses"
+        const val ROUTE_COURSES_INSERT = "courses/insert"
     }
 }

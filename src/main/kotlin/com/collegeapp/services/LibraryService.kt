@@ -12,6 +12,11 @@ import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration.Companion
 import kotlin.time.ExperimentalTime
 
+/**
+ * Library Service to add penalty to the users if they did not return the book before the [CollegeBookOwnerData::returnTimeStamp]
+ * this method checks the date of server with returnTimeStamp of all the issued books from the entire database and then adds the penalty
+ * runs once per day
+ */
 @OptIn(ExperimentalTime::class)
 object LibraryService {
 
@@ -40,6 +45,5 @@ object LibraryService {
                 }
             }
         }
-
     }
 }
