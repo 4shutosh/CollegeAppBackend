@@ -371,17 +371,18 @@ class CollegeDatabase {
                 description = insertCourseRequest.courseDescription,
                 facultyName = insertCourseRequest.courseFacultyName
             )
-            coursesCollection.updateOne(
-                CollegeCourse::id eq course.id,
-                updatedCourse
-            )
+            if (course != updatedCourse)
+                coursesCollection.updateOne(
+                    CollegeCourse::id eq course.id,
+                    updatedCourse
+                )
             return ServerResponse(
                 data = updatedCourse,
                 "Course Updated",
                 HttpStatusCode.OK.value
             )
         } else {
-            val newCourseId = ObjectId().toString().toLong()
+            val newCourseId = ObjectId().toString()
 
             val courseToInsert = CollegeCourse(
                 id = newCourseId,
