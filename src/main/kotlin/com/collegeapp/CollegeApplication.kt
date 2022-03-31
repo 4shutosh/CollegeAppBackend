@@ -11,7 +11,6 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.*
-import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import org.koin.core.context.GlobalContext.startKoin
 import org.slf4j.event.Level
@@ -46,7 +45,18 @@ class CollegeApplication {
         install(CORS) {
             method(HttpMethod.Get)
             method(HttpMethod.Post)
+
             header(HttpHeaders.Authorization)
+            header(HttpHeaders.ContentType)
+            header(HttpHeaders.ContentLength)
+            header(HttpHeaders.Connection)
+            header(HttpHeaders.Accept)
+            header(HttpHeaders.AcceptEncoding)
+            header(HttpHeaders.Host)
+            header(HttpHeaders.Vary)
+            header(HttpHeaders.Server)
+            header(HttpHeaders.Via)
+
             host("localhost:3000")
             // todo add dashboard host name here
         }
