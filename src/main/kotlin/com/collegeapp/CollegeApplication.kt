@@ -57,9 +57,10 @@ class CollegeApplication {
             header(HttpHeaders.Server)
             header(HttpHeaders.Via)
 
-            host("localhost:3000")
-            host("iiit-nagpur-firebaseapp.com", schemes = listOf("https"))
-            host("iiit-nagpur.web.com", schemes = listOf("https"))
+//            host("localhost:3000")
+//            host("iiit-nagpur-firebaseapp.com", schemes = listOf("https"))
+//            host("iiit-nagpur.web.com", schemes = listOf("https"))
+            anyHost()
         }
 
         configureContentNegotiation()
