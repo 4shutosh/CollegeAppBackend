@@ -44,10 +44,8 @@ class CollegeApplication {
             filter { call -> call.request.path().startsWith("/") }
         }
         install(CORS) {
-            method(HttpMethod.Options)
-            method(HttpMethod.Put)
-            method(HttpMethod.Delete)
-            method(HttpMethod.Patch)
+            method(HttpMethod.Get)
+            method(HttpMethod.Post)
             header(HttpHeaders.Authorization)
             host("localhost:3000")
             // todo add dashboard host name here
