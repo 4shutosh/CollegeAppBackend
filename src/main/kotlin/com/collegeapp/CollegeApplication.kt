@@ -58,7 +58,8 @@ class CollegeApplication {
             header(HttpHeaders.Via)
 
             host("localhost:3000")
-            // todo add dashboard host name here
+            host("iiit-nagpur-firebaseapp.com")
+            host("iiit-nagpur.web.com")
         }
 
         configureContentNegotiation()
