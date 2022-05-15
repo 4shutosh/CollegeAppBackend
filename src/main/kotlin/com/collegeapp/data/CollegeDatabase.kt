@@ -420,7 +420,7 @@ class CollegeDatabase {
 
         announcementsCollection.insertOne(
             CollegeAnnouncements(
-                id = newAnnouncementId,
+                announcementId = newAnnouncementId,
                 title = insertAnnouncementRoute.title,
                 description = insertAnnouncementRoute.message,
             )
@@ -437,9 +437,9 @@ class CollegeDatabase {
     suspend fun deleteAnnouncement(announcementId: String): ServerResponse<Any> {
 
         // can use wasAcknowledged() here
-        val announcementToDelete = announcementsCollection.findOne(CollegeAnnouncements::id eq announcementId)
+        val announcementToDelete = announcementsCollection.findOne(CollegeAnnouncements::announcementId eq announcementId)
         return if (announcementToDelete != null) {
-            announcementsCollection.deleteOne(CollegeAnnouncements::id eq announcementId)
+            announcementsCollection.deleteOne(CollegeAnnouncements::announcementId eq announcementId)
 
             ServerResponse(
                 data = "",
