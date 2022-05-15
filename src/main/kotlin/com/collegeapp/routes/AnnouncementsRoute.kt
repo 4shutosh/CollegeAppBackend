@@ -1,9 +1,10 @@
 package com.collegeapp.routes
 
 import com.collegeapp.data.CollegeDatabase
-import com.collegeapp.models.requests.InsertAnnouncementRoute
+import com.collegeapp.models.requests.InsertAnnouncementRequest
 import com.collegeapp.utils.Constants.ANNOUNCEMENT_ID
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_ANNOUNCEMENTS
+import com.collegeapp.utils.Constants.EndPoints.ROUTE_ANNOUNCEMENTS_DELETE
 import com.collegeapp.utils.Constants.EndPoints.ROUTE_ANNOUNCEMENTS_INSERT
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -29,7 +30,7 @@ object AnnouncementsRoute {
 
     fun Route.insertAnnouncements() {
         post("/$ROUTE_ANNOUNCEMENTS_INSERT") {
-            val request = call.receive<InsertAnnouncementRoute>()
+            val request = call.receive<InsertAnnouncementRequest>()
 
             val response = collegeDatabase.insertAnnouncement(request)
 
@@ -40,7 +41,7 @@ object AnnouncementsRoute {
     }
 
     fun Route.deleteAnnouncement() {
-        post("/$ROUTE_ANNOUNCEMENTS_INSERT") {
+        post("/$ROUTE_ANNOUNCEMENTS_DELETE") {
             val request = call.parameters[ANNOUNCEMENT_ID]
 
             if (request != null) {

@@ -40,5 +40,6 @@ object Constants {
 
         const val ROUTE_ANNOUNCEMENTS = "announcements"
         const val ROUTE_ANNOUNCEMENTS_INSERT = "announcements/insert"
+        const val ROUTE_ANNOUNCEMENTS_DELETE = "announcements/delete"
     }
 }

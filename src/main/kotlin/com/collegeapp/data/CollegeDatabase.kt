@@ -3,7 +3,7 @@ package com.collegeapp.data
 import com.collegeapp.auth.JwtService
 import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.local.*
-import com.collegeapp.models.requests.InsertAnnouncementRoute
+import com.collegeapp.models.requests.InsertAnnouncementRequest
 import com.collegeapp.models.requests.InsertCourseRequest
 import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.utils.CollegeLogger
@@ -414,16 +414,16 @@ class CollegeDatabase {
         )
     }
 
-    suspend fun insertAnnouncement(insertAnnouncementRoute: InsertAnnouncementRoute): ServerResponse<String> {
+    suspend fun insertAnnouncement(insertAnnouncementRequest: InsertAnnouncementRequest): ServerResponse<String> {
 
         val newAnnouncementId = ObjectId().toString()
 
         announcementsCollection.insertOne(
             CollegeAnnouncements(
                 announcementId = newAnnouncementId,
-                title = insertAnnouncementRoute.title,
-                description = insertAnnouncementRoute.message,
-                link = insertAnnouncementRoute.link
+                title = insertAnnouncementRequest.title,
+                description = insertAnnouncementRequest.message,
+                link = insertAnnouncementRequest.link
             )
         )
 
@@ -440,10 +440,10 @@ class CollegeDatabase {
         // can use wasAcknowledged() here
         val announcementToDelete = announcementsCollection.findOne(CollegeAnnouncements::announcementId eq announcementId)
         return if (announcementToDelete != null) {
-            announcementsCollection.deleteOne(CollegeAnnouncements::announcementId eq announcementId)
+            val delete = announcementsCollection.deleteOne(CollegeAnnouncements::announcementId eq announcementId)
 
             ServerResponse(
-                data = "",
+                data = delete.wasAcknowledged(),
                 message = "Announcement Delete Success",
                 status = HttpStatusCode.OK.value
             )
