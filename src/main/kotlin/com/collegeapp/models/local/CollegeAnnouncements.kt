@@ -7,6 +7,6 @@ package com.collegeapp.models.local
 data class CollegeAnnouncements(
     val id: String,
     val title: String,
-    val message: String,
+    val description: String,
     val expiryDayTimeStamp: Long = 0
 )
