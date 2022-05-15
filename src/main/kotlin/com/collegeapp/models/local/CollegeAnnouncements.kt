@@ -5,7 +5,7 @@ package com.collegeapp.models.local
 * hours, minutes, and seconds would have no significance */
 
 data class CollegeAnnouncements(
-    val id: Long,
+    val id: String,
     val title: String,
     val message: String,
     val expiryDayTimeStamp: Long = 0
