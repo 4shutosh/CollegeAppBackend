@@ -173,22 +173,31 @@ class CollegeDatabase {
     }
 
 
-    suspend fun getAllUserBooks(userID: String): ServerResponse<Any> {
-        var userLibraryData = libraryCollection.findOneById(
-            userID
-        )
-        if (userLibraryData == null) {
-            libraryCollection.insertOne(UserLibraryData(userID, emptyList()))
-        }
+    suspend fun getAllUserBooks(email: String): ServerResponse<Any> {
+        val user = userCollection.findOne(CollegeUser::email eq email)
+        if (user != null) {
+            var userLibraryData = libraryCollection.findOneById(
+                user.userId
+            )
+            if (userLibraryData == null) {
+                libraryCollection.insertOne(UserLibraryData(user.userId, emptyList()))
+            }
 
-        userLibraryData = libraryCollection.findOneById(
-            userID
-        )
-        return ServerResponse(
-            data = userLibraryData,
-            message = if (userLibraryData?.userBookDataList != null && userLibraryData.userBookDataList.isNotEmpty()) "Books Found" else "No Books Found",
-            status = HttpStatusCode.OK.value
-        )
+            userLibraryData = libraryCollection.findOneById(
+                user.userId
+            )
+            return ServerResponse(
+                data = userLibraryData,
+                message = if (userLibraryData?.userBookDataList != null && userLibraryData.userBookDataList.isNotEmpty()) "Books Found" else "No Books Found",
+                status = HttpStatusCode.OK.value
+            )
+        } else {
+            return ServerResponse(
+                data = null,
+                message = "Wrong email used",
+                status = HttpStatusCode.NotFound.value
+            )
+        }
     }
 
     suspend fun insertOrUpdateBook(
@@ -438,7 +447,8 @@ class CollegeDatabase {
     suspend fun deleteAnnouncement(announcementId: String): ServerResponse<Any> {
 
         // can use wasAcknowledged() here
-        val announcementToDelete = announcementsCollection.findOne(CollegeAnnouncements::announcementId eq announcementId)
+        val announcementToDelete =
+            announcementsCollection.findOne(CollegeAnnouncements::announcementId eq announcementId)
         return if (announcementToDelete != null) {
             val delete = announcementsCollection.deleteOne(CollegeAnnouncements::announcementId eq announcementId)
 
