@@ -28,6 +28,7 @@ class CollegeDatabase {
     private val libraryCollection = database.getCollection<UserLibraryData>()
     private val booksCollection = database.getCollection<CollegeBook>()
     private val coursesCollection = database.getCollection<CollegeCourse>()
+    private val announcementsCollection = database.getCollection<CollegeAnnouncements>()
 
     suspend fun checkForUser(
         jwtToken: JwtService.JwtData, userEmail: String, userName: String, userImageUrl: String
@@ -400,5 +401,15 @@ class CollegeDatabase {
                 HttpStatusCode.OK.value
             )
         }
+    }
+
+    suspend fun getAllAnnouncements(): ServerResponse<Any> {
+        val announcements = announcementsCollection.find().toList()
+
+        return ServerResponse(
+            data = announcements,
+            message = if (announcements.isNotEmpty()) "Announcements Found" else "No Announcements Found",
+            status = HttpStatusCode.OK.value
+        )
     }
 }

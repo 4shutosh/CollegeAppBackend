@@ -1,6 +1,7 @@
 package com.collegeapp.plugins
 
 import com.collegeapp.auth.getJwtData
+import com.collegeapp.routes.AnnouncementsRoute.getAllAnnouncements
 import com.collegeapp.routes.LoginRoute.loginOrCreateUser
 import com.collegeapp.routes.books.BooksRoute.getAllBooks
 import com.collegeapp.routes.books.BooksRoute.getBookByLibraryRoute
@@ -23,7 +24,7 @@ fun Application.configureRouting() {
     val jwtData = getJwtData()
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("Hello World! This is IIITN Backend Service")
         }
 
         loginOrCreateUser(jwtData)
@@ -44,6 +45,9 @@ fun Application.configureRouting() {
             // courses
             getAllCourses()
             insertUpdateCourse()
+
+            // announcements
+            getAllAnnouncements()
 
 
             // Static plugin. Try to access `/static/index.html`
