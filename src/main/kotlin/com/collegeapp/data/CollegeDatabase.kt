@@ -423,6 +423,7 @@ class CollegeDatabase {
                 announcementId = newAnnouncementId,
                 title = insertAnnouncementRoute.title,
                 description = insertAnnouncementRoute.message,
+                link = insertAnnouncementRoute.link
             )
         )
 

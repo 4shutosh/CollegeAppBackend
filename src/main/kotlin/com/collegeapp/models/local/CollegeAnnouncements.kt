@@ -8,5 +8,6 @@ data class CollegeAnnouncements(
     val announcementId: String,
     val title: String,
     val description: String,
+    val link: String? = null,
     val expiryDayTimeStamp: Long = 0
 )
