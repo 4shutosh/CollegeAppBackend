@@ -3,6 +3,7 @@ package com.collegeapp.data
 import com.collegeapp.auth.JwtService
 import com.collegeapp.models.ServerResponse
 import com.collegeapp.models.local.*
+import com.collegeapp.models.requests.InsertAnnouncementRoute
 import com.collegeapp.models.requests.InsertCourseRequest
 import com.collegeapp.models.responses.CollegeUser
 import com.collegeapp.utils.CollegeLogger
@@ -28,6 +29,7 @@ class CollegeDatabase {
     private val libraryCollection = database.getCollection<UserLibraryData>()
     private val booksCollection = database.getCollection<CollegeBook>()
     private val coursesCollection = database.getCollection<CollegeCourse>()
+    private val announcementsCollection = database.getCollection<CollegeAnnouncements>()
 
     suspend fun checkForUser(
         jwtToken: JwtService.JwtData, userEmail: String, userName: String, userImageUrl: String
@@ -398,6 +400,57 @@ class CollegeDatabase {
                 data = courseToInsert,
                 message = "Course Added",
                 HttpStatusCode.OK.value
+            )
+        }
+    }
+
+    suspend fun getAllAnnouncements(): ServerResponse<Any> {
+        val announcements = announcementsCollection.find().toList()
+
+        return ServerResponse(
+            data = announcements,
+            message = if (announcements.isNotEmpty()) "Announcements Found" else "No Announcements Found",
+            status = HttpStatusCode.OK.value
+        )
+    }
+
+    suspend fun insertAnnouncement(insertAnnouncementRoute: InsertAnnouncementRoute): ServerResponse<String> {
+
+        val newAnnouncementId = ObjectId().toString()
+
+        announcementsCollection.insertOne(
+            CollegeAnnouncements(
+                id = newAnnouncementId,
+                title = insertAnnouncementRoute.title,
+                message = insertAnnouncementRoute.message,
+            )
+        )
+
+        return ServerResponse(
+            data = newAnnouncementId,
+            message = "Announcement Insert Success",
+            status = HttpStatusCode.OK.value
+        )
+
+    }
+
+    suspend fun deleteAnnouncement(announcementId: String): ServerResponse<Any> {
+
+        // can use wasAcknowledged() here
+        val announcementToDelete = announcementsCollection.findOne(CollegeAnnouncements::id eq announcementId)
+        return if (announcementToDelete != null) {
+            announcementsCollection.deleteOne(CollegeAnnouncements::id eq announcementId)
+
+            ServerResponse(
+                data = "",
+                message = "Announcement Delete Success",
+                status = HttpStatusCode.OK.value
+            )
+        } else {
+            ServerResponse(
+                data = "",
+                message = "Something went wrong",
+                status = HttpStatusCode.BadRequest.value
             )
         }
     }
