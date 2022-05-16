@@ -414,7 +414,8 @@ class CollegeDatabase {
     }
 
     suspend fun getAllAnnouncements(): ServerResponse<Any> {
-        val announcements = announcementsCollection.find().toList()
+        val announcements =
+            announcementsCollection.find().descendingSort(CollegeAnnouncements::timeStampCreation).toList()
 
         return ServerResponse(
             data = announcements,
@@ -432,6 +433,7 @@ class CollegeDatabase {
                 announcementId = newAnnouncementId,
                 title = insertAnnouncementRequest.title,
                 description = insertAnnouncementRequest.message,
+                timeStampCreation = System.currentTimeMillis(),
                 link = insertAnnouncementRequest.link
             )
         )
